@@ -1,26 +1,66 @@
-# Python
+# ============================================================================
+# Purple — .gitignore
+# Never commit: secrets, your personal data/memory, downloaded models, build output.
+# ============================================================================
+
+# --- Python ---
 __pycache__/
 *.py[cod]
+*$py.class
 .venv/
 venv/
+env/
 *.egg-info/
+build/
+dist/
+.eggs/
 
-# Environment & secrets
+# --- Tooling caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.hypothesis/
+
+# --- Secrets & config (LOCAL ONLY — never commit) ---
 .env
+.env.*
+!.env.example
 *.local
+google_credentials.json        # Google OAuth client secrets
+google_token.json              # saved Google authorization token
 
-# Data / models / logs (local-only, never commit)
-data/
-models/
-*.log
+# --- Your data / memory / models (local, private, often large) ---
+data/                          # job-run state, tool-usage log, scratch
+logs/                          # rotating runtime logs
+models/                        # downloaded model files (Kokoro, wake word, ...)
+*.onnx                         # wake-word / Kokoro model weights
+*.bin                          # Kokoro voices, model blobs
+voiceprints.json               # enrolled speaker embeddings (biometric — keep private)
 *.sqlite
+*.sqlite3
+*.db
 *.wav
+*.mp3
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/src-tauri/target/
+# --- Frontend (React + Tauri) ---
+frontend/**/node_modules/
+frontend/**/dist/
+frontend/**/.vite/
+frontend/**/src-tauri/target/
+frontend/**/src-tauri/gen/
+*.tsbuildinfo
 
-# OS
+# --- Editors / IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS cruft ---
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 .DS_Store

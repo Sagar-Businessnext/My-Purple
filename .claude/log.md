@@ -250,3 +250,8 @@
 - ruff: full greeting.py (145L) + full briefing.py (160L) reconstructed faithfully → "All checks passed!" (mount still truncating these on read; verified via heredoc reconstruction).
 - Files: src/purple/greeting.py, src/purple/briefing.py, tests/unit/test_observe_greeting.py, RUN_TONIGHT.txt.
 - Result: success. Behavior: weather only mornings or severe heads-ups; news offered anytime; greeting varies each boot.
+
+## 2026-06-17T01:30:00Z — Refresh .gitignore + README for repo
+- .gitignore: rewrote to cover secrets (.env*, google_credentials.json, google_token.json, voiceprints.json), private data (data/, logs/, models/, *.onnx, *.bin, *.wav), tooling caches (.pytest_cache/.ruff_cache/.mypy_cache/.coverage), correct Tauri paths (frontend/**/src-tauri/target & gen, .vite), IDE/OS cruft. Keeps .env.example tracked.
+- README.md: rewrote to current reality — Kokoro (not Piper), all 6 milestones, full feature list (memory/PC/web/proactivity/greeting+briefing/self-suggestions/observe/voice/missions/email/smart-home), accurate architecture, prereqs incl qwen3-vl, setup.ps1 + manual + optional extras ([dev]/[speaker]/[google]/[xtts]/[observability]), entry points (purple/purple-selfcheck/purple-service), smoke test, full project layout (all current modules), Safety & privacy section, bnac dev workflow, scale path. Points to RUN_TONIGHT.txt.
+- Files: .gitignore, README.md. Result: success (docs only).
