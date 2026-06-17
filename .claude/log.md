@@ -263,3 +263,17 @@
 - Verify: no non-ASCII remains in any .ps1; setup.ps1 quotes even (96), braces 27/27, parens 24/24 balanced; only backticks are legit `n newline escapes.
 - NOTE for user: their working copy is D:\My-Purple (separate from D:\Purple). Gave in-place one-liner (Get-Content -Raw ... -replace '[^\x00-\x7F]','-' | Set-Content -Encoding ASCII) + copy-from-D:\Purple option.
 - Files: setup.ps1, scripts/install_service.ps1. Result: success (verified ASCII + balanced; live PowerShell parse to be confirmed on user's PC).
+
+## 2026-06-18T00:00:00Z — Fix models/data path (src/ root bug) + harden DB setup step
+- Symptom (selfcheck on D:\My-Purple): Kokoro WARN looked in <root>\src\models\kokoro but setup.ps1 downloaded to <root>\models\kokoro; PostgreSQL FAIL "password authentication failed for user purple".
+- ROOT PATH BUG (real, affects everyone): config.py ROOT = Path(__file__).resolve().parent.parent → after src/ restructure that = <root>/src, so models/, data/, logs/, and config_api's .env all wrongly resolved INSIDE src/. Fixed: ROOT = parents[2] (file is <root>/src/purple/config.py → project root). Now models_dir/data_dir/log_dir + config_api ROOT/.env + google.py ROOT/path all correctly point at the project root (where setup.ps1 + .gitignore + .env already live). Verified path math in sandbox; reviewed all consumers (settings.data_dir/models_dir/log_dir, config_api.ROOT, google.ROOT) — all benefit.
+- POSTGRES (environment, not code): setup.ps1 hard-coded PGPASSWORD=postgres and swallowed psql errors (2>$null), so when the user's superuser password differed, role/db/extension were never created. Reworked the DB step to prompt for the superuser password (Enter to skip), CREATE USER purple/'purple' + CREATE DATABASE purple OWNER purple + CREATE EXTENSION vector, and report failures via $LASTEXITCODE instead of hiding them. Pure ASCII.
+- User action: D:\My-Purple is a pre-fix copy — copy updated src\purple\config.py (Kokoro path) + setup.ps1; create the DB via psql as superuser (or Docker pgvector/pgvector:pg16). pgvector binary must be installed in their Postgres for CREATE EXTENSION to succeed.
+- Files: src/purple/config.py, setup.ps1. Result: success (path verified; live DB on user's PC).
+
+## 2026-06-18T00:30:00Z — setup.ps1 DB step: stop hardcoding the role password
+- User flagged: setup.ps1 still hardcoded role password 'purple' while their .env uses 'MyPurple' (mismatch).
+- Why it was 'purple': zero-config default matching .env.example's default DSN (purple:purple@...).
+- Fix: DB step now prompts for the desired 'purple' role password (Enter = 'purple'), CREATE USER + ALTER USER to force it (converges on re-run), CREATE DATABASE OWNER purple, CREATE EXTENSION vector, then rewrites PURPLE_PG_DSN in .env via regex to embed that password (single source of truth, no drift). CREATE statements wrapped in try{}catch{} so 'already exists' is harmless on re-run.
+- Verified real file complete + balanced via Read (mount served a truncated copy → ignore the bash brace-count). Pure ASCII.
+- Files: setup.ps1. Result: success. User's manual MyPurple setup already works; this is for future/clean re-runs.

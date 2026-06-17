@@ -42,12 +42,30 @@ if (Have ollama) {
 
 Step "PostgreSQL database"
 if (Have psql) {
-    $env:PGPASSWORD = "postgres"
-    $sql = "CREATE DATABASE purple;","CREATE USER purple WITH PASSWORD 'purple';","GRANT ALL PRIVILEGES ON DATABASE purple TO purple;"
-    foreach ($s in $sql) { try { psql -U postgres -h 127.0.0.1 -c $s 2>$null } catch {} }
-    try { psql -U postgres -h 127.0.0.1 -d purple -c "CREATE EXTENSION IF NOT EXISTS vector;" 2>$null; Ok "Database 'purple' + pgvector ready" }
-    catch { Warn "Could not enable pgvector - ensure the pgvector extension is installed for your Postgres" }
-} else { Warn "psql not found - create DB 'purple' and run CREATE EXTENSION vector; manually (see README)" }
+    $superpw = Read-Host "  Postgres superuser ('postgres') password [press Enter to skip DB setup]"
+    if ([string]::IsNullOrWhiteSpace($superpw)) {
+        Warn "Skipped - create role + DB manually (see README), then re-run python -m purple.selfcheck"
+    } else {
+        $apppw = Read-Host "  Password to set for Purple's DB role 'purple' [Enter to keep 'purple']"
+        if ([string]::IsNullOrWhiteSpace($apppw)) { $apppw = "purple" }
+        $env:PGPASSWORD = $superpw
+        # Create the role/db if missing (harmless 'already exists' on re-run), then force the
+        # role password so it always matches what we write into .env below.
+        try { psql -U postgres -h 127.0.0.1 -c "CREATE USER purple WITH PASSWORD '$apppw';" } catch {}
+        psql -U postgres -h 127.0.0.1 -c "ALTER USER purple WITH PASSWORD '$apppw';"
+        try { psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE purple OWNER purple;" } catch {}
+        psql -U postgres -h 127.0.0.1 -d purple -c "CREATE EXTENSION IF NOT EXISTS vector;"
+        if ($LASTEXITCODE -eq 0) {
+            # Keep .env's connection string in sync with the password we just set (single source of truth).
+            if (Test-Path ".env") {
+                (Get-Content ".env") -replace 'PURPLE_PG_DSN=postgresql\+asyncpg://purple:[^@]*@', "PURPLE_PG_DSN=postgresql+asyncpg://purple:$apppw@" | Set-Content ".env"
+                Ok "Database 'purple' + pgvector ready; password synced into .env"
+            } else {
+                Ok "Database 'purple' + pgvector ready (no .env yet - set PURPLE_PG_DSN password to '$apppw')"
+            }
+        } else { Warn "pgvector step failed - is the pgvector extension installed for your Postgres? (see README)" }
+    }
+} else { Warn "psql not found - create DB 'purple' + role and run CREATE EXTENSION vector; manually (README)" }
 
 Step "Kokoro voice model"
 $kdir = "models\kokoro"

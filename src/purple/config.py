@@ -11,8 +11,9 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Project root (this file lives in <root>/purple/config.py)
-ROOT = Path(__file__).resolve().parent.parent
+# Project root. This file lives at <root>/src/purple/config.py, so the root is 3 levels up.
+# (data/, models/, logs/ and .env live at the project root, NOT inside src/.)
+ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT / "data"
 MODELS_DIR = ROOT / "models"
 
