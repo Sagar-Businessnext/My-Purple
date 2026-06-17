@@ -18,7 +18,7 @@ $settings = New-ScheduledTaskSettingsSet `
     -ExecutionTimeLimit ([TimeSpan]::Zero)
 
 Register-ScheduledTask -TaskName "Purple" -Action $action -Trigger $trigger `
-    -Settings $settings -Description "Purple — always-on personal assistant" -Force | Out-Null
+    -Settings $settings -Description "Purple - always-on personal assistant" -Force | Out-Null
 
 Write-Host "[ OK ] Registered 'Purple' to start at logon."
 Write-Host "Start it now with:  Start-ScheduledTask -TaskName Purple"

@@ -255,3 +255,11 @@
 - .gitignore: rewrote to cover secrets (.env*, google_credentials.json, google_token.json, voiceprints.json), private data (data/, logs/, models/, *.onnx, *.bin, *.wav), tooling caches (.pytest_cache/.ruff_cache/.mypy_cache/.coverage), correct Tauri paths (frontend/**/src-tauri/target & gen, .vite), IDE/OS cruft. Keeps .env.example tracked.
 - README.md: rewrote to current reality — Kokoro (not Piper), all 6 milestones, full feature list (memory/PC/web/proactivity/greeting+briefing/self-suggestions/observe/voice/missions/email/smart-home), accurate architecture, prereqs incl qwen3-vl, setup.ps1 + manual + optional extras ([dev]/[speaker]/[google]/[xtts]/[observability]), entry points (purple/purple-selfcheck/purple-service), smoke test, full project layout (all current modules), Safety & privacy section, bnac dev workflow, scale path. Points to RUN_TONIGHT.txt.
 - Files: .gitignore, README.md. Result: success (docs only).
+
+## 2026-06-17T02:00:00Z — Fix setup.ps1 parse errors (non-ASCII em-dashes)
+- Symptom (user, running D:\My-Purple\setup.ps1): cascade of "Missing argument", "string missing terminator", "Missing closing '}'" parse errors.
+- Root cause: setup.ps1 + scripts/install_service.ps1 contained em-dash (—, U+2014). Windows PowerShell 5.1 reads .ps1 as ANSI/CP1252, not UTF-8; the UTF-8 em-dash byte 0x94 decodes to a CP1252 curly close-quote, silently opening a string → cascading false brace/terminator errors.
+- Fix: rewrote setup.ps1 pure-ASCII (em-dashes → '-'; also removed two stray markdown backticks inside double-quoted strings on the Playwright/Ollama Warn lines). Fixed the one em-dash in scripts/install_service.ps1. uninstall_service.ps1 already clean.
+- Verify: no non-ASCII remains in any .ps1; setup.ps1 quotes even (96), braces 27/27, parens 24/24 balanced; only backticks are legit `n newline escapes.
+- NOTE for user: their working copy is D:\My-Purple (separate from D:\Purple). Gave in-place one-liner (Get-Content -Raw ... -replace '[^\x00-\x7F]','-' | Set-Content -Encoding ASCII) + copy-from-D:\Purple option.
+- Files: setup.ps1, scripts/install_service.ps1. Result: success (verified ASCII + balanced; live PowerShell parse to be confirmed on user's PC).
