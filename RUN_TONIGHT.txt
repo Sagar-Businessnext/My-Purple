@@ -1,0 +1,220 @@
+==============================================================================
+ PURPLE — RUN FROM START TO END + FEATURE TESTING  (paste into Notepad)
+ Windows PowerShell.  Project folder: D:\Purple
+ Every line that starts with > is a command to run. Lines without > are notes.
+==============================================================================
+
+
+------------------------------------------------------------------------------
+ PART 0 — ONE-TIME PREREQUISITES (skip any you already installed)
+------------------------------------------------------------------------------
+Install these once, from their websites, then reboot if asked:
+
+  1. Python 3.12         https://www.python.org/downloads/   (tick "Add to PATH")
+  2. Ollama              https://ollama.com/download
+  3. PostgreSQL 16 + pgvector
+                         https://www.postgresql.org/download/windows/
+                         pgvector: https://github.com/pgvector/pgvector (or use
+                         the "StackBuilder" extension, or EDB's bundle)
+  4. ffmpeg              https://www.gyan.dev/ffmpeg/builds/  (add bin\ to PATH)
+                         (needed for microphone / Whisper audio decoding)
+  5. Node.js LTS         https://nodejs.org   (only if you want the desktop UI)
+
+Confirm they're on PATH (each should print a version):
+  > python --version
+  > ollama --version
+  > psql --version
+  > ffmpeg -version
+
+
+------------------------------------------------------------------------------
+ PART 1 — SETUP (one command, idempotent — safe to re-run)
+------------------------------------------------------------------------------
+  > cd D:\Purple
+  > powershell -ExecutionPolicy Bypass -File setup.ps1
+
+This creates the virtual env, installs Purple, pulls the Ollama models
+(qwen2.5:14b + nomic-embed-text), creates the Postgres DB + pgvector, downloads
+the Kokoro voice, copies .env, and finishes by running the self-check.
+
+Optional extras (install only the ones you want to test):
+  > .\.venv\Scripts\Activate.ps1
+  > pip install -e ".[speaker]"        # voice access gate (only your voice talks to her)
+  > pip install -e ".[google]"         # Gmail + Calendar
+  > pip install -e ".[observability]"  # Prometheus /metrics
+  > python -m playwright install chromium   # browser control (setup.ps1 already tries this)
+
+
+------------------------------------------------------------------------------
+ PART 2 — CONFIGURE (open D:\Purple\.env in Notepad)
+------------------------------------------------------------------------------
+  > notepad D:\Purple\.env
+
+Set at least your city so weather + greeting work (no API key needed):
+      PURPLE_WEATHER_LOCATION=Pune          (use your city)
+
+Good defaults already set — change only if you want:
+      PURPLE_ENABLE_GREETING=true           time-aware hello on startup
+      PURPLE_BRIEFING_HOUR=7                 daily briefing time (24h)
+      PURPLE_OBSERVE_DEFAULT=false           screen observation stays OFF until you ask
+      PURPLE_OBSERVE_AUTO_OFF_HOURS=4        observation auto-stops after 4h
+      PURPLE_WHISPER_DEVICE=cuda             set to "cpu" if you have no NVIDIA GPU
+      PURPLE_REQUIRE_CONFIRMATION=true       risky actions always ask first (keep true)
+
+Save and close Notepad.
+
+
+------------------------------------------------------------------------------
+ PART 3 — GO / NO-GO SELF-CHECK  (fix anything it flags before continuing)
+------------------------------------------------------------------------------
+  > cd D:\Purple
+  > .\.venv\Scripts\Activate.ps1
+  > python -m purple.selfcheck
+
+You want green/OK on: Ollama reachable + model present, Postgres + pgvector,
+tool registry, speech config. If something is red, see PART 8.
+
+
+------------------------------------------------------------------------------
+ PART 4 — START PURPLE
+------------------------------------------------------------------------------
+Leave this window open — it's the running server.
+  > cd D:\Purple
+  > .\.venv\Scripts\Activate.ps1
+  > purple
+
+(Equivalent: python -m purple.run)
+On startup you'll get a GREETING (a toast + a line in the activity feed, and
+spoken aloud if your speakers are on). On the very first run you'll ALSO get a
+one-time "catch-up" briefing, because no previous briefing is on record yet —
+that's expected; after that it only catches up a missed briefing on boot.
+
+
+------------------------------------------------------------------------------
+ PART 5 — QUICK SMOKE TEST (open a SECOND PowerShell window; server keeps running)
+------------------------------------------------------------------------------
+These hit the API directly, so they work even without the desktop UI.
+
+Health (expect ok:true, ollama:true, database:true):
+  > Invoke-RestMethod http://127.0.0.1:8765/health | ConvertTo-Json -Depth 5
+
+Talk to her:
+  > Invoke-RestMethod -Method Post http://127.0.0.1:8765/chat -ContentType 'application/json' -Body '{"message":"Hi Purple, who are you?"}'
+
+Weather (after setting your city in .env):
+  > Invoke-RestMethod -Method Post http://127.0.0.1:8765/chat -ContentType 'application/json' -Body '{"message":"What is the weather right now?"}'
+
+News (real headlines, fetched live):
+  > Invoke-RestMethod -Method Post http://127.0.0.1:8765/chat -ContentType 'application/json' -Body '{"message":"Give me today news"}'
+
+Full briefing on demand:
+  > Invoke-RestMethod -Method Post http://127.0.0.1:8765/chat -ContentType 'application/json' -Body '{"message":"Give me my briefing"}'
+
+Screen observation toggle (privacy feature — off by default):
+  > Invoke-RestMethod http://127.0.0.1:8765/observe                      # status
+  > Invoke-RestMethod -Method Post http://127.0.0.1:8765/observe -ContentType 'application/json' -Body '{"on":true}'   # start
+  > Invoke-RestMethod -Method Post http://127.0.0.1:8765/observe -ContentType 'application/json' -Body '{"on":false}'  # stop
+  (Or just tell her in chat: "start observing"  /  "stop observing".)
+
+What improvements she's noticed (self-suggestions + config nudges):
+  > Invoke-RestMethod http://127.0.0.1:8765/suggestions | ConvertTo-Json
+
+
+------------------------------------------------------------------------------
+ PART 6 — FEATURE-BY-FEATURE TEST CHECKLIST
+ Use chat (PART 5 pattern) or the UI (PART 7). [ ] = tick when verified.
+------------------------------------------------------------------------------
+WORKS OUT OF THE BOX
+ [ ] Greeting        Restart the server -> a time-aware hello, varied each boot (morning =
+                     "what can I help you get done", after ~5pm = "how was your day").
+                     Weather is volunteered ONLY in the morning (or any time if rough
+                     weather is here/coming). The "want today's headlines?" offer shows
+                     any time of day. (Set a city in .env for the weather line.)
+ [ ] Chat            "Explain what you can do." -> a normal reply.
+ [ ] Memory          "Remember that my sister's name is Anya." then later
+                     "What's my sister's name?" -> recalls it.
+ [ ] Reminders       "Remind me to call the bank at 5pm." then "What are my reminders?"
+ [ ] Notes           "Take a note: order more coffee." then "Read my notes."
+ [ ] Weather         "What's the weather?"  (needs PURPLE_WEATHER_LOCATION)
+ [ ] News            "What's in the news?"  -> live headlines (not made up).
+ [ ] Briefing        "Catch me up." -> reminders due + weather + headlines.
+ [ ] Observe ON/OFF  "Start observing." Open a document, then ask "summarise what
+                     I'm looking at" — she can use the window title for context.
+                     Then "Stop observing." (Auto-stops after 4h regardless.)
+ [ ] Self-suggestion "What could we improve?" or hit /suggestions. With no city set
+                     she'll suggest adding one. The usage-based suggestions (e.g.
+                     "you lean on raw commands a lot — want a dedicated tool?")
+                     appear after repeated real use over ~2 weeks, by design.
+ [ ] PC: open app    "Open Notepad."  /  "Open https://example.com"
+ [ ] PC: windows     "List my open windows."
+ [ ] PC: files       "Search my Documents folder for files named invoice."
+ [ ] Run command     "Empty my recycle bin." -> she prepares it and ASKS to confirm
+                     (commit-confirm). Confirm to run. (Generic escape hatch.)
+ [ ] Automations     "Notify me whenever an email from my boss arrives."
+
+NEEDS A LITTLE EXTRA (optional tonight)
+ [ ] Vision          Pull the model first:  > ollama pull qwen3-vl:8b
+                     Then "What's on my screen right now?"
+ [ ] Browser         (after playwright install) "Open youtube.com and search lo-fi."
+ [ ] Voice — push-to-talk
+                     In .env set PURPLE_ENABLE_PUSH_TO_TALK=true, restart, press
+                     Ctrl+Alt+Space and speak.
+ [ ] Voice — wake word
+                     In .env set PURPLE_ENABLE_WAKE=true, restart, say the wake word.
+ [ ] Voice gate      (after pip install .[speaker]) enroll your voice in the UI's
+                     voice section; afterwards only your voice can command her.
+ [ ] Email/Calendar  (after pip install .[google]) put OAuth client secrets in
+                     google_credentials.json; first use opens a browser to authorize.
+ [ ] Phone           Needs Android + USB debugging + adb on PATH; "What's on my phone?"
+ [ ] Missions        "Start a mission: research three budget laptops and compare them."
+                     Watch it run multi-step in the Missions tab.
+
+
+------------------------------------------------------------------------------
+ PART 7 — DESKTOP UI (optional; needs Node.js)  — gives you the Observe button,
+          tabs (Chat / Monitor / Automations / Memory / Missions / Settings)
+------------------------------------------------------------------------------
+First time only — scaffold the Tauri shell and drop in Purple's UI source:
+  > cd D:\Purple\frontend
+  (Follow frontend/README.md: create the tauri-app, then copy the files from
+   frontend/ui-src/ into the app's src/.)
+
+Then, with the backend (PART 4) running, start the UI:
+  > cd D:\Purple\frontend\app
+  > npm install
+  > npm run tauri dev
+
+In the UI: the header has an "Observe off / Observing" toggle (click to start/stop
+screen observation); the greeting and any suggestions show in the Monitor feed.
+
+
+------------------------------------------------------------------------------
+ PART 8 — TROUBLESHOOTING (most likely issues first)
+------------------------------------------------------------------------------
+* selfcheck says Ollama down:
+      > ollama serve            (run in its own window)
+      > ollama pull qwen2.5:14b-instruct-q4_K_M
+* selfcheck says database/pgvector down:
+      Make sure PostgreSQL service is running, then:
+      > psql -U postgres -h 127.0.0.1 -d purple -c "CREATE EXTENSION IF NOT EXISTS vector;"
+* It's very slow / out of memory (you have 16GB):
+      qwen-14b is heavy. In .env lower the load:
+      PURPLE_WHISPER_MODEL=small      and if needed try a smaller LLM:
+      PURPLE_LLM_MODEL=qwen2.5:7b-instruct-q4_K_M   (then: ollama pull that model)
+* No NVIDIA GPU:
+      In .env set PURPLE_WHISPER_DEVICE=cpu and PURPLE_WHISPER_COMPUTE=int8
+* Microphone / audio errors:
+      Make sure ffmpeg is on PATH; check Windows mic permissions.
+* "playwright" / browser errors:
+      > python -m playwright install chromium
+* See what happened:
+      > Invoke-RestMethod "http://127.0.0.1:8765/logs?n=80"
+      or open D:\Purple\logs\purple.log
+
+
+------------------------------------------------------------------------------
+ PART 9 — STOP
+------------------------------------------------------------------------------
+In the server window (PART 4): press Ctrl+C.
+That's it. Re-run PART 4 anytime to start her again.
+==============================================================================

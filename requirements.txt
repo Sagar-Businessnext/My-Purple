@@ -1,0 +1,6 @@
+# Canonical dependency list now lives in pyproject.toml (bnac python-project-structure).
+# Install Purple and all its dependencies in editable mode:
+-e .
+
+# For dev tooling (pytest, ruff, mypy) use the dev extra:
+#   pip install -e ".[dev]"

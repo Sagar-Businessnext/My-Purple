@@ -1,0 +1,1121 @@
+{
+  "version": 1,
+  "packageVersion": "1.0.3",
+  "timestamp": "2026-06-05T11:24:41.253Z",
+  "target": "claude",
+  "adapter": "claude-home",
+  "profileId": "python",
+  "installedModules": [
+    "global-entry-points",
+    "core-agents",
+    "core-skills",
+    "core-commands",
+    "core-rules",
+    "pipeline",
+    "stack-python",
+    "hooks-runtime"
+  ],
+  "operations": [
+    {
+      "kind": "copy",
+      "source": "global/AGENTS.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/AGENTS.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/CLAUDE.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/CLAUDE.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/COMMANDS.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/COMMANDS.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/RULES.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/RULES.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/SKILLS.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/SKILLS.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/templates/MEMORY.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/templates/MEMORY.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/templates/SUMMARY.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/templates/SUMMARY.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/templates/carry-forward.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/templates/carry-forward.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/templates/log.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/templates/log.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/templates/milestone-status.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/templates/milestone-status.md"
+    },
+    {
+      "kind": "copy",
+      "source": "global/templates/project-CLAUDE.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/templates/project-CLAUDE.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-agent-creator.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-agent-creator.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-bundle-creator.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-bundle-creator.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-changelog-agent.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-changelog-agent.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-command-creator.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-command-creator.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-context-compactor.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-context-compactor.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-cross-llm-reviewer.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-cross-llm-reviewer.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-developer.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-developer.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-go-nogo-approver.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-go-nogo-approver.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-kpi-tracker.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-kpi-tracker.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-memory-curator.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-memory-curator.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-milestone-planner.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-milestone-planner.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-milestone-tracker.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-milestone-tracker.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-phase-planner.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-phase-planner.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-pipeline-state-tracker.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-pipeline-state-tracker.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-planner.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-planner.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-quality-gate.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-quality-gate.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-reviewer.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-reviewer.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-skill-creator.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-skill-creator.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-status-update-agent.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-status-update-agent.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/agents/bnac-task-planner.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/bnac-task-planner.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/agent-authoring-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/agent-authoring-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/agent-authoring-template/reference/body-structure.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/agent-authoring-template/reference/body-structure.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/agent-authoring-template/reference/frontmatter.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/agent-authoring-template/reference/frontmatter.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/automation-planning/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/automation-planning/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/automation-planning/reference/output-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/automation-planning/reference/output-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/build-fix/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/build-fix/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/build-fix/reference/common-errors.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/build-fix/reference/common-errors.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/changelog-conventions/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/changelog-conventions/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/changelog-conventions/reference/commit-mapping.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/changelog-conventions/reference/commit-mapping.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/changelog-conventions/reference/format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/changelog-conventions/reference/format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/code-review/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/code-review/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/code-review/reference/review-checklist.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/code-review/reference/review-checklist.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/command-authoring-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/command-authoring-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/command-authoring-template/reference/agent-wiring.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/command-authoring-template/reference/agent-wiring.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/command-authoring-template/reference/command-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/command-authoring-template/reference/command-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/compact-milestone-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/compact-milestone-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/compact-milestone-template/reference/milestone-summary-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/compact-milestone-template/reference/milestone-summary-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/compact-phase-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/compact-phase-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/compact-phase-template/reference/phase-summary-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/compact-phase-template/reference/phase-summary-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/context-carry-forward/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/context-carry-forward/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/context-carry-forward/reference/stitching-strategy.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/context-carry-forward/reference/stitching-strategy.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/cross-llm-consensus/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/cross-llm-consensus/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/cross-llm-consensus/reference/consensus-algorithm.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/cross-llm-consensus/reference/consensus-algorithm.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/cross-llm-consensus/reference/model-pairing.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/cross-llm-consensus/reference/model-pairing.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/docs-planning/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/docs-planning/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/docs-planning/reference/output-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/docs-planning/reference/output-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/feature-planning/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/feature-planning/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/feature-planning/reference/output-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/feature-planning/reference/output-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/git-workflow/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/git-workflow/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/git-workflow/reference/commit-examples.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/git-workflow/reference/commit-examples.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/kpi-evidence-collection/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/kpi-evidence-collection/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/kpi-evidence-collection/reference/evidence-record-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/kpi-evidence-collection/reference/evidence-record-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/kpi-evidence-collection/reference/kpi-categories.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/kpi-evidence-collection/reference/kpi-categories.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/memory-conventions/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/memory-conventions/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/memory-conventions/reference/memory-frontmatter.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/memory-conventions/reference/memory-frontmatter.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/memory-conventions/reference/memory-types.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/memory-conventions/reference/memory-types.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/milestone-management/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/milestone-management/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/milestone-management/reference/milestone-workflow.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/milestone-management/reference/milestone-workflow.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/milestone-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/milestone-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/milestone-template/reference/acceptance-tests.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/milestone-template/reference/acceptance-tests.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/milestone-template/reference/milestone-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/milestone-template/reference/milestone-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/phase-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/phase-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/phase-template/reference/phase-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/phase-template/reference/phase-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/phase-template/reference/phase-naming.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/phase-template/reference/phase-naming.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/pipeline-stage-machine/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pipeline-stage-machine/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/pipeline-stage-machine/reference/current-state-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pipeline-stage-machine/reference/current-state-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/pipeline-stage-machine/reference/states-and-transitions.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pipeline-stage-machine/reference/states-and-transitions.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/project-planning/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/project-planning/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/project-planning/reference/delegation-hierarchy.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/project-planning/reference/delegation-hierarchy.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/project-planning/reference/scope-decomposition.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/project-planning/reference/scope-decomposition.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/release-approval/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/release-approval/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/release-approval/reference/approval-record-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/release-approval/reference/approval-record-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/release-approval/reference/approval-tiers.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/release-approval/reference/approval-tiers.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/skill-authoring-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/skill-authoring-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/skill-authoring-template/reference/reference-files.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/skill-authoring-template/reference/reference-files.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/skill-authoring-template/reference/skill-md-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/skill-authoring-template/reference/skill-md-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/status-report-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/status-report-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/status-report-template/reference/format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/status-report-template/reference/format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/status-report-template/reference/sources.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/status-report-template/reference/sources.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/task-estimation/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/task-estimation/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/task-estimation/reference/complexity-tiers.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/task-estimation/reference/complexity-tiers.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/task-estimation/reference/task-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/task-estimation/reference/task-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/testcase-planning/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/testcase-planning/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/testcase-planning/reference/output-format.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/testcase-planning/reference/output-format.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/verification-loop/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/verification-loop/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/skills/verification-loop/reference/verification-steps.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/verification-loop/reference/verification-steps.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-agent-create.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-agent-create.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-build-fix.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-build-fix.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-bundle-create.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-bundle-create.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-changelog.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-changelog.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-code-review.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-code-review.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-command-create.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-command-create.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-context.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-context.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-cross-llm-review.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-cross-llm-review.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-feature-dev.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-feature-dev.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-go-nogo.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-go-nogo.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-init.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-init.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-kpi.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-kpi.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-memory.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-memory.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-milestone-plan.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-milestone-plan.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-milestone.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-milestone.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-phase-plan.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-phase-plan.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-phase.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-phase.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-pipeline-run-all.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-pipeline-run-all.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-pipeline-stage.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-pipeline-stage.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-plan.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-plan.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-quality-gate.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-quality-gate.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-skill-create.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-skill-create.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-status-update.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-status-update.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-task-plan.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-task-plan.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-undo.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-undo.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/commands/bnac-update-docs.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-update-docs.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/rules/activity-logging.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/rules/activity-logging.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/rules/coding-standards.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/rules/coding-standards.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/rules/context-first.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/rules/context-first.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/rules/git-workflow.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/rules/git-workflow.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/rules/memory-management.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/rules/memory-management.md"
+    },
+    {
+      "kind": "copy",
+      "source": "pipeline/functional-specification/template/prd-template.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/pipeline/functional-specification/template/prd-template.md"
+    },
+    {
+      "kind": "copy",
+      "source": "pipeline/prompts/generate-plan.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/pipeline/prompts/generate-plan.md"
+    },
+    {
+      "kind": "copy",
+      "source": "pipeline/prompts/generate-skills.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/pipeline/prompts/generate-skills.md"
+    },
+    {
+      "kind": "copy",
+      "source": "pipeline/prompts/generate-tech-spec.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/pipeline/prompts/generate-tech-spec.md"
+    },
+    {
+      "kind": "copy",
+      "source": "pipeline/validation/critical-rules.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/pipeline/validation/critical-rules.md"
+    },
+    {
+      "kind": "copy",
+      "source": "pipeline/validation/cross-reference.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/pipeline/validation/cross-reference.md"
+    },
+    {
+      "kind": "copy",
+      "source": "pipeline/validation/warning-rules.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/pipeline/validation/warning-rules.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/agents/python-code-verifier.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/python-code-verifier.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/agents/python-compliance-checker.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/python-compliance-checker.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/agents/python-developer.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/python-developer.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/agents/python-doc-writer.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/python-doc-writer.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/agents/python-migrator.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/python-migrator.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/agents/python-pr-approver.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/python-pr-approver.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/agents/python-security-checker.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/python-security-checker.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/agents/python-unit-test-developer.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/agents/python-unit-test-developer.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/commands/bnac-python-compliance-check.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-python-compliance-check.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/commands/bnac-python-doc-write.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-python-doc-write.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/commands/bnac-python-feature-dev.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-python-feature-dev.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/commands/bnac-python-migrate.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-python-migrate.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/commands/bnac-python-pr-approve.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-python-pr-approve.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/commands/bnac-python-security-check.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-python-security-check.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/commands/bnac-python-test.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-python-test.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/commands/bnac-python-verify.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/commands/bnac-python-verify.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/owasp-python/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/owasp-python/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/owasp-python/reference/mitigations.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/owasp-python/reference/mitigations.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/owasp-python/reference/top10-mapping.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/owasp-python/reference/top10-mapping.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/pep8-style/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pep8-style/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/pep8-style/reference/naming-rules.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pep8-style/reference/naming-rules.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/pep8-style/reference/ruff-config.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pep8-style/reference/ruff-config.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/pytest-testing/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pytest-testing/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/pytest-testing/reference/fixture-patterns.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pytest-testing/reference/fixture-patterns.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/pytest-testing/reference/parametrize-recipes.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/pytest-testing/reference/parametrize-recipes.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-code-review/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-code-review/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-code-review/reference/common-pitfalls.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-code-review/reference/common-pitfalls.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-code-review/reference/review-checklist.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-code-review/reference/review-checklist.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-docstrings/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-docstrings/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-docstrings/reference/google-style.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-docstrings/reference/google-style.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-docstrings/reference/numpy-style.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-docstrings/reference/numpy-style.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-patterns/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-patterns/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-patterns/reference/async-patterns.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-patterns/reference/async-patterns.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-patterns/reference/dataclasses-vs-pydantic.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-patterns/reference/dataclasses-vs-pydantic.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-project-structure/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-project-structure/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-project-structure/reference/pyproject-config.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-project-structure/reference/pyproject-config.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-project-structure/reference/src-layout.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-project-structure/reference/src-layout.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-readme-template/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-readme-template/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-readme-template/reference/examples.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-readme-template/reference/examples.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-readme-template/reference/template-structure.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-readme-template/reference/template-structure.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-security-bandit/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-security-bandit/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-security-bandit/reference/b-codes-reference.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-security-bandit/reference/b-codes-reference.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-security-bandit/reference/suppression-policy.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-security-bandit/reference/suppression-policy.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-typing/SKILL.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-typing/SKILL.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-typing/reference/mypy-strictness.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-typing/reference/mypy-strictness.md"
+    },
+    {
+      "kind": "copy",
+      "source": "stacks/python/skills/python-typing/reference/typing-cheatsheet.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/skills/python-typing/reference/typing-cheatsheet.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/hooks/ds-compliance-hook.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/hooks/ds-compliance-hook.md"
+    },
+    {
+      "kind": "copy",
+      "source": "core/hooks/separation-pattern-hook.md",
+      "dest": "/sessions/gifted-happy-feynman/mnt/Purple/.claude/hooks/separation-pattern-hook.md"
+    }
+  ],
+  "fileCount": 183,
+  "checksums": {
+    "global/AGENTS.md": "856e464985f5b498",
+    "global/CLAUDE.md": "15ff38f6b7b460a3",
+    "global/COMMANDS.md": "397c1420e77e882e",
+    "global/RULES.md": "22ae05940e3d0908",
+    "global/SKILLS.md": "4b48653ef80318c4",
+    "global/templates/MEMORY.md": "7df2f9fbfb45e374",
+    "global/templates/SUMMARY.md": "af163e21ea009692",
+    "global/templates/carry-forward.md": "b21062f1889646a3",
+    "global/templates/log.md": "468967e04e8375a6",
+    "global/templates/milestone-status.md": "65bc06f87d6240c0",
+    "global/templates/project-CLAUDE.md": "73e66fde64214188",
+    "core/agents/bnac-agent-creator.md": "9631afe5a1ffaffb",
+    "core/agents/bnac-bundle-creator.md": "865ac3b40e6fb917",
+    "core/agents/bnac-changelog-agent.md": "0dd445447a446021",
+    "core/agents/bnac-command-creator.md": "78e591ef76c3baf0",
+    "core/agents/bnac-context-compactor.md": "2cf74e9067a32c10",
+    "core/agents/bnac-cross-llm-reviewer.md": "ee115b466f72f5af",
+    "core/agents/bnac-developer.md": "5657a6aa75acdc95",
+    "core/agents/bnac-go-nogo-approver.md": "a8e3fe042ad0ae06",
+    "core/agents/bnac-kpi-tracker.md": "b0f02727bc9feb44",
+    "core/agents/bnac-memory-curator.md": "8dd14d9645c4be81",
+    "core/agents/bnac-milestone-planner.md": "9e8f25e2b2bb6228",
+    "core/agents/bnac-milestone-tracker.md": "99ea07adbc22a444",
+    "core/agents/bnac-phase-planner.md": "59c4d2b0c4290513",
+    "core/agents/bnac-pipeline-state-tracker.md": "dfbcf747e7a4de1e",
+    "core/agents/bnac-planner.md": "f87882f69155a539",
+    "core/agents/bnac-quality-gate.md": "fd3b2ec39554af24",
+    "core/agents/bnac-reviewer.md": "cf346257de4a29a8",
+    "core/agents/bnac-skill-creator.md": "756bfb5ac46a0fbc",
+    "core/agents/bnac-status-update-agent.md": "54e9760db4138130",
+    "core/agents/bnac-task-planner.md": "a80d7dc4ce1cb597",
+    "core/skills/agent-authoring-template/SKILL.md": "4ac237279bfb2ae7",
+    "core/skills/agent-authoring-template/reference/body-structure.md": "715bbf275429787a",
+    "core/skills/agent-authoring-template/reference/frontmatter.md": "931758eecb5a0a9c",
+    "core/skills/automation-planning/SKILL.md": "4102f890ac81ac19",
+    "core/skills/automation-planning/reference/output-format.md": "18be112c2de2fa93",
+    "core/skills/build-fix/SKILL.md": "1397fca9516240b8",
+    "core/skills/build-fix/reference/common-errors.md": "57432a4cd422848d",
+    "core/skills/changelog-conventions/SKILL.md": "28d40a3d3afae060",
+    "core/skills/changelog-conventions/reference/commit-mapping.md": "f8ea53b7a5d190d4",
+    "core/skills/changelog-conventions/reference/format.md": "a3217006440b362c",
+    "core/skills/code-review/SKILL.md": "c7fe5690c5941bbd",
+    "core/skills/code-review/reference/review-checklist.md": "c362d703e4ec7350",
+    "core/skills/command-authoring-template/SKILL.md": "3ffb34708a30d5db",
+    "core/skills/command-authoring-template/reference/agent-wiring.md": "c588b0404a72f7b2",
+    "core/skills/command-authoring-template/reference/command-format.md": "67f6feb1e2056549",
+    "core/skills/compact-milestone-template/SKILL.md": "3724ac5865b00913",
+    "core/skills/compact-milestone-template/reference/milestone-summary-format.md": "04fdbd6b4abcbbee",
+    "core/skills/compact-phase-template/SKILL.md": "093c603d5bcbbece",
+    "core/skills/compact-phase-template/reference/phase-summary-format.md": "574f24bb5315ccae",
+    "core/skills/context-carry-forward/SKILL.md": "5673f29faf19663a",
+    "core/skills/context-carry-forward/reference/stitching-strategy.md": "ce9ac6cd9ff7bdce",
+    "core/skills/cross-llm-consensus/SKILL.md": "3b6a6d529803816a",
+    "core/skills/cross-llm-consensus/reference/consensus-algorithm.md": "d3bbf8a17bbb22b5",
+    "core/skills/cross-llm-consensus/reference/model-pairing.md": "e2a4f6d80ec77972",
+    "core/skills/docs-planning/SKILL.md": "3ff4d84ab794081f",
+    "core/skills/docs-planning/reference/output-format.md": "7d2491840369afb5",
+    "core/skills/feature-planning/SKILL.md": "29336c89d6ae82f9",
+    "core/skills/feature-planning/reference/output-format.md": "312f4887ed3500e5",
+    "core/skills/git-workflow/SKILL.md": "06325a7c03db1ee6",
+    "core/skills/git-workflow/reference/commit-examples.md": "769a9b7ed43534d2",
+    "core/skills/kpi-evidence-collection/SKILL.md": "e4243d10cce7cd57",
+    "core/skills/kpi-evidence-collection/reference/evidence-record-format.md": "ceba4f78bbf37aee",
+    "core/skills/kpi-evidence-collection/reference/kpi-categories.md": "a8b8d63337bb42e5",
+    "core/skills/memory-conventions/SKILL.md": "05b67e6c9a27929b",
+    "core/skills/memory-conventions/reference/memory-frontmatter.md": "776f11da2b6b2b5c",
+    "core/skills/memory-conventions/reference/memory-types.md": "6883b52be9b5b88a",
+    "core/skills/milestone-management/SKILL.md": "813f4e72ae4cbe3a",
+    "core/skills/milestone-management/reference/milestone-workflow.md": "2df7625c47ddd2fa",
+    "core/skills/milestone-template/SKILL.md": "6b0127e3aa83ac15",
+    "core/skills/milestone-template/reference/acceptance-tests.md": "2f8ab77863d2c43b",
+    "core/skills/milestone-template/reference/milestone-format.md": "128cead352e9b278",
+    "core/skills/phase-template/SKILL.md": "83715caa3cafb841",
+    "core/skills/phase-template/reference/phase-format.md": "4541c9dda646f474",
+    "core/skills/phase-template/reference/phase-naming.md": "4964e1e39878c79a",
+    "core/skills/pipeline-stage-machine/SKILL.md": "d4b9340038134e2e",
+    "core/skills/pipeline-stage-machine/reference/current-state-format.md": "2bb03bc095d5ce9d",
+    "core/skills/pipeline-stage-machine/reference/states-and-transitions.md": "dd15d1441ad9942d",
+    "core/skills/project-planning/SKILL.md": "6e8481312744d5c6",
+    "core/skills/project-planning/reference/delegation-hierarchy.md": "1335b71d54938d42",
+    "core/skills/project-planning/reference/scope-decomposition.md": "34a2c2a70c27d736",
+    "core/skills/release-approval/SKILL.md": "51b0e0d8a4feb72e",
+    "core/skills/release-approval/reference/approval-record-format.md": "a907c1dcfbeafdc1",
+    "core/skills/release-approval/reference/approval-tiers.md": "c3db61ffcec826eb",
+    "core/skills/skill-authoring-template/SKILL.md": "4225856e3f1fe42c",
+    "core/skills/skill-authoring-template/reference/reference-files.md": "af26619b951fbaf3",
+    "core/skills/skill-authoring-template/reference/skill-md-format.md": "7a300fa9671a14d7",
+    "core/skills/status-report-template/SKILL.md": "235dc80744348e0a",
+    "core/skills/status-report-template/reference/format.md": "8e7940e8ee052242",
+    "core/skills/status-report-template/reference/sources.md": "790032078c502612",
+    "core/skills/task-estimation/SKILL.md": "15d5b2984ea3e10f",
+    "core/skills/task-estimation/reference/complexity-tiers.md": "3ea3e7c4a6e28f92",
+    "core/skills/task-estimation/reference/task-format.md": "79a514c025e611da",
+    "core/skills/testcase-planning/SKILL.md": "84db3699d0dd2908",
+    "core/skills/testcase-planning/reference/output-format.md": "588ca0cab5c99e00",
+    "core/skills/verification-loop/SKILL.md": "8d7eda0de167e66a",
+    "core/skills/verification-loop/reference/verification-steps.md": "9bd30a53b5c3f777",
+    "core/commands/bnac-agent-create.md": "43c86d6f2752f070",
+    "core/commands/bnac-build-fix.md": "0c349deed5095f24",
+    "core/commands/bnac-bundle-create.md": "3f01b536cf4ff2c4",
+    "core/commands/bnac-changelog.md": "4cb60c7f591fa9d5",
+    "core/commands/bnac-code-review.md": "208262fc8a227375",
+    "core/commands/bnac-command-create.md": "2907a9d6d73269a8",
+    "core/commands/bnac-context.md": "45e9b8b4c0682128",
+    "core/commands/bnac-cross-llm-review.md": "760b31a13c110216",
+    "core/commands/bnac-feature-dev.md": "e93910c285c3e9cd",
+    "core/commands/bnac-go-nogo.md": "5ace6a7d9d70ff45",
+    "core/commands/bnac-init.md": "6c7fa3579c1958ac",
+    "core/commands/bnac-kpi.md": "20bcb89be3a637b2",
+    "core/commands/bnac-memory.md": "4a195f8b87723c91",
+    "core/commands/bnac-milestone-plan.md": "574154a0bbe4996d",
+    "core/commands/bnac-milestone.md": "ac57525497369d70",
+    "core/commands/bnac-phase-plan.md": "ad43e46fea839f76",
+    "core/commands/bnac-phase.md": "56035a14e925d920",
+    "core/commands/bnac-pipeline-run-all.md": "5b230ec5816575d6",
+    "core/commands/bnac-pipeline-stage.md": "1bfa81bae6021f2f",
+    "core/commands/bnac-plan.md": "3cc28c4fed443137",
+    "core/commands/bnac-quality-gate.md": "094414f5e7eceb13",
+    "core/commands/bnac-skill-create.md": "56ed1b1cead71b8a",
+    "core/commands/bnac-status-update.md": "8b2aeabfd3f08eb0",
+    "core/commands/bnac-task-plan.md": "ffef5894a46af813",
+    "core/commands/bnac-undo.md": "cd89eec7e2b52f0d",
+    "core/commands/bnac-update-docs.md": "7dc51d6a89d005e6",
+    "core/rules/activity-logging.md": "7f7dbdccfa9056a2",
+    "core/rules/coding-standards.md": "bf411b3480ae8710",
+    "core/rules/context-first.md": "51e5ba85b0150a75",
+    "core/rules/git-workflow.md": "9b86bb25feb8d276",
+    "core/rules/memory-management.md": "4427219b965511ab",
+    "pipeline/functional-specification/template/prd-template.md": "c5dec33de7be5b5e",
+    "pipeline/prompts/generate-plan.md": "dd926aefe0e18c85",
+    "pipeline/prompts/generate-skills.md": "c063ce6edff86321",
+    "pipeline/prompts/generate-tech-spec.md": "ca299a0e2a06e314",
+    "pipeline/validation/critical-rules.md": "5477ff81a5ea923b",
+    "pipeline/validation/cross-reference.md": "2486faa75d6aa431",
+    "pipeline/validation/warning-rules.md": "84882392b9774423",
+    "stacks/python/agents/python-code-verifier.md": "c0f95488cb788698",
+    "stacks/python/agents/python-compliance-checker.md": "d922fac6dd881507",
+    "stacks/python/agents/python-developer.md": "80c8d0cf37400de9",
+    "stacks/python/agents/python-doc-writer.md": "9b3af9f3bcbcd1e5",
+    "stacks/python/agents/python-migrator.md": "ced28e0c47f06837",
+    "stacks/python/agents/python-pr-approver.md": "38861f7817020a90",
+    "stacks/python/agents/python-security-checker.md": "bf06845b0ba44d41",
+    "stacks/python/agents/python-unit-test-developer.md": "0db93a7087118289",
+    "stacks/python/commands/bnac-python-compliance-check.md": "c06a79f9fae53afb",
+    "stacks/python/commands/bnac-python-doc-write.md": "feff22983566f7a1",
+    "stacks/python/commands/bnac-python-feature-dev.md": "86885d54087490c3",
+    "stacks/python/commands/bnac-python-migrate.md": "fc194318c9b4e8f6",
+    "stacks/python/commands/bnac-python-pr-approve.md": "0358dcc6ebe7f559",
+    "stacks/python/commands/bnac-python-security-check.md": "f73ca927dbc3219c",
+    "stacks/python/commands/bnac-python-test.md": "3357aa694f3c2488",
+    "stacks/python/commands/bnac-python-verify.md": "7134c35c11bf2342",
+    "stacks/python/skills/owasp-python/SKILL.md": "cf9c12c694baf216",
+    "stacks/python/skills/owasp-python/reference/mitigations.md": "f928e62d7e4eff60",
+    "stacks/python/skills/owasp-python/reference/top10-mapping.md": "975e2be6be4d0c56",
+    "stacks/python/skills/pep8-style/SKILL.md": "6aab67b7dbacbd98",
+    "stacks/python/skills/pep8-style/reference/naming-rules.md": "fc00bcf9d566a9af",
+    "stacks/python/skills/pep8-style/reference/ruff-config.md": "778adf29aa0f02bc",
+    "stacks/python/skills/pytest-testing/SKILL.md": "03ea80a9e30d0ac8",
+    "stacks/python/skills/pytest-testing/reference/fixture-patterns.md": "bec1d78b1a218944",
+    "stacks/python/skills/pytest-testing/reference/parametrize-recipes.md": "4ac76c77cd52868c",
+    "stacks/python/skills/python-code-review/SKILL.md": "d1a8bce78ed36796",
+    "stacks/python/skills/python-code-review/reference/common-pitfalls.md": "268f46fc6f2a9d2b",
+    "stacks/python/skills/python-code-review/reference/review-checklist.md": "76b84fbe8718c158",
+    "stacks/python/skills/python-docstrings/SKILL.md": "1215548f50b347c1",
+    "stacks/python/skills/python-docstrings/reference/google-style.md": "09833156ad1cde67",
+    "stacks/python/skills/python-docstrings/reference/numpy-style.md": "d121aa6581246556",
+    "stacks/python/skills/python-patterns/SKILL.md": "fb9ab02772b876a4",
+    "stacks/python/skills/python-patterns/reference/async-patterns.md": "abf516c77d50426a",
+    "stacks/python/skills/python-patterns/reference/dataclasses-vs-pydantic.md": "c4a07a0e7182790a",
+    "stacks/python/skills/python-project-structure/SKILL.md": "956976ec6b0c7991",
+    "stacks/python/skills/python-project-structure/reference/pyproject-config.md": "5c71db5b2ae21455",
+    "stacks/python/skills/python-project-structure/reference/src-layout.md": "e5f03c2b74d751da",
+    "stacks/python/skills/python-readme-template/SKILL.md": "a2107da53bcd94af",
+    "stacks/python/skills/python-readme-template/reference/examples.md": "2ae0adb593dc43e3",
+    "stacks/python/skills/python-readme-template/reference/template-structure.md": "429699c418680177",
+    "stacks/python/skills/python-security-bandit/SKILL.md": "5deccb4392580da8",
+    "stacks/python/skills/python-security-bandit/reference/b-codes-reference.md": "1ce522fee3e25eb7",
+    "stacks/python/skills/python-security-bandit/reference/suppression-policy.md": "cde83fde8c95ad71",
+    "stacks/python/skills/python-typing/SKILL.md": "cef072da5e3a5a13",
+    "stacks/python/skills/python-typing/reference/mypy-strictness.md": "1d4bd42101a688b1",
+    "stacks/python/skills/python-typing/reference/typing-cheatsheet.md": "13604375a47b7b09",
+    "core/hooks/ds-compliance-hook.md": "2aa9756f2342b141",
+    "core/hooks/separation-pattern-hook.md": "57c20d14168e54e0"
+  }
+}

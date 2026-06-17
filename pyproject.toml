@@ -1,0 +1,125 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "purple"
+version = "0.1.0"
+description = "A fully-local, Jarvis-style personal assistant that runs on your own PC."
+requires-python = ">=3.12"
+readme = "README.md"
+dependencies = [
+    # Web / API
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30,<1.0",
+    "pydantic>=2.7,<3.0",
+    "pydantic-settings>=2.3,<3.0",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27,<1.0",
+    # LLM (local via Ollama)
+    "ollama>=0.3,<1.0",
+    # Memory: PostgreSQL + pgvector
+    "SQLAlchemy[asyncio]>=2.0,<3.0",
+    "asyncpg>=0.29,<1.0",
+    "pgvector>=0.3,<1.0",
+    "alembic>=1.13,<2.0",
+    # Speech (local)
+    "faster-whisper>=1.0,<2.0",
+    "kokoro-onnx>=0.4",
+    "sounddevice>=0.4,<1.0",
+    "numpy>=1.26,<3.0",
+    "openwakeword>=0.6",
+    # Tools / capabilities
+    "playwright>=1.44",
+    "psutil>=5.9",
+    # Knowledge base (RAG) document parsing
+    "pypdf>=4.0",
+    "python-docx>=1.1",
+    "pyautogui>=0.9.54",
+    "AppOpener>=1.7",
+    "pygetwindow>=0.0.9",
+    "pyperclip>=1.8",
+    "send2trash>=1.8",
+    "uiautomation>=2.0; sys_platform == 'win32'",
+    # Desktop (tray + global hotkey)
+    "pystray>=0.19",
+    "Pillow>=10.0",
+    "pynput>=1.7",
+    # Infra / utilities
+    "structlog>=24.1",
+    "tenacity>=8.2",
+    "APScheduler>=3.10,<4.0",
+    # Observability
+    "prometheus-client>=0.20",
+    # Notifications
+    "win11toast>=0.34; sys_platform == 'win32'",
+    # Audio output state (so Purple knows if her voice can be heard)
+    "pycaw>=20230407; sys_platform == 'win32'",
+    "comtypes>=1.2; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+observability = [
+    "opentelemetry-sdk>=1.25",
+    "opentelemetry-exporter-otlp-proto-http>=1.25",
+]
+google = [
+    "google-api-python-client>=2.0",
+    "google-auth-oauthlib>=1.0",
+]
+xtts = [
+    "TTS>=0.22",
+]
+speaker = [
+    "resemblyzer>=0.1",
+]
+
+[project.scripts]
+purple = "purple.run:main"
+purple-service = "purple.service:main"
+purple-selfcheck = "purple.selfcheck:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/purple"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "C4", "UP", "SIM", "RUF", "PTH", "N", "ANN"]
+ignore = ["E501", "ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN", "S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["purple"]
+force-sort-within-sections = true
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI dependency-injection defaults are the standard pattern, not B008 bugs.
+extend-immutable-calls = ["fastapi.File", "fastapi.Depends", "fastapi.Query", "fastapi.Form"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+magic-trailing-comma = true
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+warn_unused_ignores = false
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
