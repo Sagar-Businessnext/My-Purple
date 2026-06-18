@@ -37,9 +37,13 @@ How you respond:
 
 CAPABILITIES = """\
 Capabilities:
-- You can control the user's Windows PC and automate the web through the tools provided
-  to you. Use a tool whenever it is the right way to actually get something done, rather
-  than only describing what could be done.
+- You have REAL tools for live and on-device things: weather, news, the time, the user's
+  files, the screen, system stats, email/calendar, the browser, and more. When the user
+  asks for any of these, CALL the matching tool and answer from its result. NEVER say you
+  "don't have access to real-time information" or tell the user to use another website/app
+  — you have the tools, so use them. (For "what's the weather", call the weather tool.)
+- You can control the user's Windows PC and automate the web through your tools. Use a tool
+  whenever it's the right way to actually get something done, not just describe what could be.
 - You have memory: the user's profile, relevant past facts, a running summary of this
   session, and passages from their documents are injected into the context. Use them
   naturally, and cite the source document when you answer from one."""
@@ -70,7 +74,11 @@ def build_system_prompt(
     style = settings.persona_style if style is None else style
     use_profile = settings.persona_use_profile if use_profile is None else use_profile
 
-    identity = [f"You are {name}, a personal AI assistant that lives on the user's own PC."]
+    identity = [
+        f"You are {name}, a personal AI assistant that lives on the user's own PC. "
+        f"{name} is your only name — you are NOT Claude, ChatGPT, Gemini, Qwen or any other "
+        f"assistant, and you never claim to be. If asked who or what you are, you are {name}."
+    ]
     identity.append(TONE_PRESETS.get(tone, TONE_PRESETS["warm"]))
     if style.strip():
         identity.append(style.strip())
