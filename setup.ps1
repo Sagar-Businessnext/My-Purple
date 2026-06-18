@@ -34,11 +34,13 @@ else { Ok ".env already exists" }
 
 Step "Ollama models"
 if (Have ollama) {
-    foreach ($m in @("qwen2.5:14b-instruct-q4_K_M", "nomic-embed-text")) {
+    # Remove the older 4-bit model if it's present (we now use the sharper q6_K).
+    try { ollama rm qwen2.5:14b-instruct-q4_K_M 2>$null } catch {}
+    foreach ($m in @("qwen2.5:14b-instruct-q6_K", "nomic-embed-text")) {
         Write-Host "  pulling $m ..."
         try { ollama pull $m; Ok "pulled $m" } catch { Warn "could not pull $m" }
     }
-} else { Warn "Ollama not found - install from ollama.com, then: ollama pull qwen2.5:14b-instruct-q4_K_M" }
+} else { Warn "Ollama not found - install from ollama.com, then: ollama pull qwen2.5:14b-instruct-q6_K" }
 
 Step "PostgreSQL database"
 if (Have psql) {

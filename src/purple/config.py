@@ -36,7 +36,7 @@ class Settings(BaseSettings):
 
     # --- LLM (Ollama) ---
     ollama_base_url: str = "http://127.0.0.1:11434"
-    llm_model: str = "qwen2.5:14b-instruct-q4_K_M"
+    llm_model: str = "qwen2.5:14b-instruct-q6_K"  # sharper than q4; ~12GB, fits a 16GB GPU
     embed_model: str = "nomic-embed-text"
 
     # --- Vision (screen understanding via a local VLM) ---

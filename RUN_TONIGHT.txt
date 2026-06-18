@@ -5,6 +5,48 @@
 ==============================================================================
 
 
+==============================================================================
+ PART U — APPLY THE LATEST UPDATES (already running Purple? do this in one go)
+ Run these top to bottom. Source code lives in D:\Purple; your copy is D:\My-Purple.
+==============================================================================
+
+# 1. Stop Purple (Ctrl+C in the server window) so the model + files aren't in use.
+
+# 2. Sync the newest code into your working copy (overwrites CODE only;
+#    your .env, data, logs, node_modules are left alone):
+> xcopy /Y /E /I D:\Purple\src D:\My-Purple\src
+> xcopy /Y /E /I D:\Purple\frontend D:\My-Purple\frontend
+> copy /Y D:\Purple\setup.ps1 D:\My-Purple\setup.ps1
+
+# 3. Upgrade the model (remove the old 4-bit, install the sharper q6_K ~12GB).
+#    Only this one model is removed; do NOT touch nomic-embed-text or qwen3-vl:8b.
+> ollama rm qwen2.5:14b-instruct-q4_K_M
+> ollama pull qwen2.5:14b-instruct-q6_K
+
+# 4. Open D:\My-Purple\.env and make sure these are set:
+> notepad D:\My-Purple\.env
+#     PURPLE_LLM_MODEL=qwen2.5:14b-instruct-q6_K
+#     PURPLE_WHISPER_DEVICE=cpu
+#     PURPLE_WHISPER_COMPUTE=int8
+#     PURPLE_WEATHER_LOCATION=Ghaziabad
+#     PURPLE_ENABLE_WAKE=true
+#     PURPLE_OPEN_UI_ON_START=true
+
+# 5. Rebuild the web UI:
+> cd D:\My-Purple\frontend
+> npm install
+> npm run build
+
+# 6. Start Purple:
+> cd D:\My-Purple
+> .\.venv\Scripts\Activate.ps1
+> purple
+
+After it starts: ask "what's the weather?" (she should call the tool and report
+Ghaziabad), and watch the log for "voice_input_device" + "wake_listening peak=..."
+to debug hands-free "hey jarvis".
+
+
 ------------------------------------------------------------------------------
  PART 0 — ONE-TIME PREREQUISITES (skip any you already installed)
 ------------------------------------------------------------------------------
@@ -197,14 +239,15 @@ first build is slow (compiles Rust). For an installer: cd frontend; npm run taur
 ------------------------------------------------------------------------------
 * selfcheck says Ollama down:
       > ollama serve            (run in its own window)
-      > ollama pull qwen2.5:14b-instruct-q4_K_M
+      > ollama pull qwen2.5:14b-instruct-q6_K
 * selfcheck says database/pgvector down:
       Make sure PostgreSQL service is running, then:
       > psql -U postgres -h 127.0.0.1 -d purple -c "CREATE EXTENSION IF NOT EXISTS vector;"
 * It's very slow / out of memory (you have 16GB):
-      qwen-14b is heavy. In .env lower the load:
-      PURPLE_WHISPER_MODEL=small      and if needed try a smaller LLM:
-      PURPLE_LLM_MODEL=qwen2.5:7b-instruct-q4_K_M   (then: ollama pull that model)
+      The default is now qwen2.5:14b q6_K (~12GB). Step down a quant:
+      PURPLE_LLM_MODEL=qwen2.5:14b-instruct-q5_K_M   (~10.5GB)  then: ollama pull it
+      ...or smaller:  PURPLE_LLM_MODEL=qwen2.5:7b-instruct-q4_K_M
+      Also PURPLE_WHISPER_MODEL=small lightens Whisper.
 * No NVIDIA GPU:
       In .env set PURPLE_WHISPER_DEVICE=cpu and PURPLE_WHISPER_COMPUTE=int8
 * Microphone / audio errors:

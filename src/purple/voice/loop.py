@@ -193,18 +193,36 @@ class VoiceLoop:
         try:
             import sounddevice as sd
 
+            import sounddevice as _sd
+
+            try:
+                dev = _sd.query_devices(kind="input")
+                log.info("voice_input_device", name=dev.get("name", "?"))
+            except Exception as exc:
+                log.warning("voice_no_input_device", error=str(exc))
             with sd.InputStream(
                 samplerate=settings.sample_rate, channels=1, dtype="int16", blocksize=FRAME
             ) as stream:
                 self._schedule(self._emit({"type": "voice", "state": "listening"}))
+                peak = 0.0
+                frames = 0
                 while not self._stop.is_set():
                     data, _flag = stream.read(FRAME)
                     frame = np.asarray(data).reshape(-1)
-                    if self.wake.is_wake(frame):
-                        log.info("wake_detected")
+                    score = self.wake.score(frame)
+                    peak = max(peak, score)
+                    frames += 1
+                    if frames >= 150:  # ~12s: prove the mic is heard + how close to waking
+                        log.info("wake_listening", peak=round(peak, 3), threshold=self.wake.threshold)
+                        peak = 0.0
+                        frames = 0
+                    if score >= self.wake.threshold:
+                        log.info("wake_detected", score=round(score, 3))
                         self._schedule(self._emit({"type": "voice", "state": "woke"}))
                         self._converse(stream)
                         self.wake.reset()
+                        peak = 0.0
+                        frames = 0
         except Exception as exc:
             log.warning("voice_loop_stopped", error=str(exc))
 

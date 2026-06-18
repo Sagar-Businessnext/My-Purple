@@ -382,3 +382,10 @@
 - WAKE WORD: user confirms PURPLE_ENABLE_WAKE=true in .env, but "hey jarvis" doesn't trigger; only the web mic BUTTON works. Web button = browser mic -> /voice (works). Wake loop = backend sounddevice mic -> openwakeword (not firing). Likely: openwakeword model download needed internet on first use (hey_jarvis) OR backend default input device issue OR loop crashed (voice_loop_stopped). Need logs\purple.log lines matching voice/wake. onnxruntime is present (kokoro-onnx dep) so model runtime should be OK.
 - Caveat recorded: qwen2.5:14b-q4 + 97 tools is a weak tool-caller; strong prompt helps but a better/less-quantized model or fewer tools may be needed if weather still doesn't fire.
 - Files: src/purple/agent/prompts.py. Result: prompt fixed (needs apply+restart); wake awaiting user logs.
+
+## 2026-06-18T10:30:00Z — Make q6_K the standard model + one-go upgrade in RUN_TONIGHT
+- User chose "stronger model"; wants the old qwen removed before installing the new one, and it all written into RUN_TONIGHT + setup.ps1.
+- Default model bumped q4_K_M -> q6_K everywhere: config.py llm_model default, .env, .env.example. setup.ps1 Ollama step now `ollama rm qwen2.5:14b-instruct-q4_K_M 2>$null` (best-effort, frees ~9GB / migrates) then pulls qwen2.5:14b-instruct-q6_K + nomic-embed-text; else-hint updated. setup.ps1 still pure ASCII.
+- RUN_TONIGHT.txt: new top section PART U "APPLY THE LATEST UPDATES (one go)": stop -> xcopy D:\Purple\src + frontend + setup.ps1 into D:\My-Purple (code only; .env/data/node_modules untouched) -> ollama rm q4 + pull q6_K (only that model; keep nomic-embed-text + qwen3-vl:8b) -> set .env (LLM q6_K, whisper cpu/int8, weather Ghaziabad, enable_wake, open_ui) -> cd frontend; npm install; npm run build -> start. Troubleshooting model refs -> q6_K, OOM step-down -> q5_K_M(~10.5GB)/7b.
+- Verified: setup.ps1 ASCII-clean; q6_K in config.py/.env/.env.example/setup.ps1; RUN_TONIGHT q4 only appears in the intended `ollama rm` line.
+- Files: src/purple/config.py, .env, .env.example, setup.ps1, RUN_TONIGHT.txt. Result: success.
