@@ -527,6 +527,28 @@ async def status() -> dict:
     }
 
 
+@app.get("/system")
+async def system_stats() -> dict:
+    """Live host stats for the Monitor charts (percent 0-100). Best-effort."""
+    import psutil
+
+    from purple import gpu
+
+    cpu = psutil.cpu_percent(interval=None)
+    ram = psutil.virtual_memory().percent
+    g: dict = {}
+    try:
+        g = gpu.status()
+    except Exception:
+        g = {}
+    return {
+        "cpu": round(cpu, 1),
+        "ram": round(ram, 1),
+        "gpu": round(float(g.get("util", 0) or 0), 1),
+        "vram": round(float(g.get("vram_pct", 0) or 0), 1),
+    }
+
+
 @app.get("/focus")
 async def focus_get() -> dict:
     from purple import focus

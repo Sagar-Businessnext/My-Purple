@@ -20,6 +20,8 @@ EDITABLE = [
     "embed_model",
     "speech_provider",
     "whisper_model",
+    "whisper_device",
+    "whisper_compute",
     "tts_engine",
     "kokoro_voice",
     "require_confirmation",
@@ -81,6 +83,9 @@ RESTART_REQUIRED = {
     "wake_model",
     "browser_cdp_url",
     "browser_headless",
+    "whisper_model",
+    "whisper_device",
+    "whisper_compute",
 }
 
 

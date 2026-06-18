@@ -13,6 +13,8 @@ from purple.utils.logging import get_logger
 
 log = get_logger("audio")
 
+_warned_query = False  # so a recurring pycaw failure is logged once, not every poll
+
 
 def _audible(available: bool, muted: bool, volume: float) -> bool:
     """Pure decision: can a spoken line actually be heard right now?"""
@@ -56,10 +58,13 @@ def output_state() -> dict:
             "known": True,
         }
     except Exception as exc:
-        # Couldn't query (no default endpoint at this instant, or a transient COM error).
-        # Treat as UNKNOWN and assume audio is fine — never silence her, and never falsely
-        # warn "no output device" when a speaker (e.g. Bluetooth) is actually connected.
-        log.info("audio_query_failed", error=str(exc))
+        # Couldn't query (no default endpoint at this instant, a transient COM error, or a
+        # pycaw version whose device lacks .Activate). Treat as UNKNOWN and assume audio is
+        # fine — never silence her, and never falsely warn "no output device". Log once only.
+        global _warned_query
+        if not _warned_query:
+            log.info("audio_query_failed", error=str(exc))
+            _warned_query = True
         return unknown
     finally:
         if initialised:

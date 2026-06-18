@@ -274,12 +274,26 @@ export default function App() {
     rec.ondataavailable = (e) => chunksRef.current.push(e.data);
     rec.onstop = async () => {
       stream.getTracks().forEach((t) => t.stop());
-      setActivity("Thinking…");
-      const res = await client.sendVoice(new Blob(chunksRef.current, { type: "audio/webm" }));
-      addMsg("user", res.transcript);
-      addMsg("purple", res.reply);
-      setActivity("");
-      if (res.audio_base64) new Audio("data:audio/wav;base64," + res.audio_base64).play();
+      setActivity("Transcribing…");
+      try {
+        const res = await client.sendVoice(new Blob(chunksRef.current, { type: "audio/webm" }));
+        const notRec = (res as { not_recognized?: string }).not_recognized;
+        if (notRec) {
+          setActivity(`Voice not recognized (${notRec}) — only enrolled voices can talk.`);
+          pushFeed(`voice: not recognized (${notRec})`);
+        } else if (!res.transcript) {
+          setActivity("Couldn't transcribe that — check the mic + Whisper setup (see server log).");
+          pushFeed("voice: empty transcript");
+        } else {
+          addMsg("user", res.transcript);
+          addMsg("purple", res.reply);
+          setActivity("");
+          if (res.audio_base64) new Audio("data:audio/wav;base64," + res.audio_base64).play();
+        }
+      } catch (err) {
+        setActivity("Voice request failed — is the backend up? Check the server log.");
+        pushFeed(`voice error: ${String(err)}`);
+      }
     };
     recorderRef.current = rec;
     rec.start();
@@ -410,11 +424,71 @@ export default function App() {
   );
 }
 
+type Series = { label: string; color: string; data: number[] };
+
+function Sparkline({ series }: { series: Series[] }) {
+  const W = 600;
+  const H = 110;
+  const n = Math.max(2, ...series.map((s) => s.data.length));
+  const px = (i: number) => (n <= 1 ? 0 : (i / (n - 1)) * W);
+  const py = (v: number) => H - (Math.max(0, Math.min(100, v)) / 100) * H;
+  return (
+    <div className="rounded-xl border border-edge bg-panel p-3">
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full" style={{ height: 120 }}>
+        {[25, 50, 75].map((g) => (
+          <line key={g} x1={0} x2={W} y1={py(g)} y2={py(g)} style={{ stroke: "rgb(var(--c-edge))" }} strokeWidth={1} />
+        ))}
+        {series.map(
+          (s) =>
+            s.data.length > 1 && (
+              <polyline
+                key={s.label}
+                fill="none"
+                style={{ stroke: s.color }}
+                strokeWidth={2}
+                strokeLinejoin="round"
+                points={s.data.map((v, i) => `${px(i)},${py(v)}`).join(" ")}
+              />
+            )
+        )}
+      </svg>
+      <div className="mt-2 flex flex-wrap gap-3">
+        {series.map((s) => (
+          <span key={s.label} className="flex items-center gap-1 text-xs text-muted">
+            <span className="inline-block h-2 w-2 rounded-full" style={{ background: s.color }} />
+            {s.label} {s.data.length ? Math.round(s.data[s.data.length - 1]) : 0}%
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Bars({ items }: { items: { label: string; value: number }[] }) {
+  const max = Math.max(1, ...items.map((i) => i.value));
+  return (
+    <div className="flex flex-col gap-1.5 rounded-xl border border-edge bg-panel p-3">
+      {items.map((i) => (
+        <div key={i.label} className="flex items-center gap-2">
+          <span className="w-40 truncate text-xs text-muted">{i.label}</span>
+          <div className="h-3 flex-1 overflow-hidden rounded bg-edge/40">
+            <div className="h-3 rounded bg-accent" style={{ width: `${(i.value / max) * 100}%` }} />
+          </div>
+          <span className="w-8 text-right text-xs text-muted">{i.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+type Sys = { cpu: number; ram: number; gpu: number; vram: number };
+
 function MonitorPanel({ feed }: { feed: string[] }) {
   const [h, setH] = useState<Health | null>(null);
   const [m, setM] = useState<Record<string, any> | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [st, setSt] = useState<Record<string, any> | null>(null);
+  const [sys, setSys] = useState<Sys[]>([]);
   useEffect(() => {
     let alive = true;
     const tick = () => {
@@ -422,14 +496,24 @@ function MonitorPanel({ feed }: { feed: string[] }) {
       client.metricsSummary().then((x) => alive && setM(x)).catch(() => {});
       client.logs(120).then((x) => alive && setLogs(x.lines || [])).catch(() => {});
       client.status().then((x) => alive && setSt(x)).catch(() => {});
+      client.system().then((x) => alive && setSys((s) => [...s.slice(-59), x])).catch(() => {});
     };
     tick();
-    const id = setInterval(tick, 4000);
+    const id = setInterval(tick, 3000);
     return () => {
       alive = false;
       clearInterval(id);
     };
   }, []);
+
+  const sysSeries: Series[] = [
+    { label: "CPU", color: "rgb(var(--c-accent))", data: sys.map((s) => s.cpu) },
+    { label: "RAM", color: "rgb(var(--c-up))", data: sys.map((s) => s.ram) },
+    { label: "GPU", color: "rgb(var(--c-down))", data: sys.map((s) => s.gpu) },
+    { label: "VRAM", color: "rgb(var(--c-muted))", data: sys.map((s) => s.vram) },
+  ];
+  const toolBars: { label: string; value: number }[] =
+    m?.tools?.map((t: any) => ({ label: `${t.tool}${t.ok === "true" ? "" : " (fail)"}`, value: t.count })) ?? [];
 
   return (
     <Panel>
@@ -455,6 +539,9 @@ function MonitorPanel({ feed }: { feed: string[] }) {
         </Btn>
       )}
 
+      <Section>System (live)</Section>
+      <Sparkline series={sysSeries} />
+
       {m && m.enabled && (
         <div className="flex flex-wrap gap-2">
           {[
@@ -472,10 +559,10 @@ function MonitorPanel({ feed }: { feed: string[] }) {
         </div>
       )}
 
-      {m && m.tools && m.tools.length > 0 && (
+      {toolBars.length > 0 && (
         <>
           <Section>Tool usage</Section>
-          <Feed lines={m.tools.map((t: any) => `${t.tool} (${t.ok === "true" ? "ok" : "fail"}): ${t.count}`)} empty="—" />
+          <Bars items={toolBars} />
         </>
       )}
 

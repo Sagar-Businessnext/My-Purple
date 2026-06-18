@@ -23,6 +23,18 @@ TONE_PRESETS: dict[str, str] = {
     "terse": "Be extremely terse. Answer in as few words as possible, with no pleasantries.",
 }
 
+RESPONSE_STYLE = """\
+How you respond:
+- Interpret the user charitably and infer intent. Don't nitpick typos, spelling or exact
+  wording — if the meaning is clear, just act on it. Never ask the user to "clarify a typo".
+- Be direct, concrete and decisive. Lead with a useful answer or action. Ask a clarifying
+  question only when you genuinely cannot proceed, and never more than one.
+- Use the conversation so far for context: a short reply like "both" or "yes" refers to what
+  was just discussed — interpret it that way, don't claim you don't understand.
+- You receive the user's messages as text and reply as text. The app also has a mic button
+  for voice input and can speak replies, but there is no always-on audio line. So "can you
+  hear me?" means "are you receiving my messages?" — and yes, you are."""
+
 CAPABILITIES = """\
 Capabilities:
 - You can control the user's Windows PC and automate the web through the tools provided
@@ -68,7 +80,7 @@ def build_system_prompt(
         if profile.get("comms_style"):
             identity.append(f"They prefer this communication style: {profile['comms_style']}.")
 
-    return f"{' '.join(identity)}\n\n{CAPABILITIES}\n\n{SAFETY}"
+    return f"{' '.join(identity)}\n\n{RESPONSE_STYLE}\n\n{CAPABILITIES}\n\n{SAFETY}"
 
 
 # Backwards-compatible default (no profile / settings defaults).

@@ -138,6 +138,10 @@ export class PurpleClient {
     return (await fetch(`${HTTP_BASE}/status`)).json();
   }
 
+  async system(): Promise<{ cpu: number; ram: number; gpu: number; vram: number }> {
+    return (await fetch(`${HTTP_BASE}/system`)).json();
+  }
+
   async setFocus(on: boolean): Promise<Record<string, any>> {
     return (
       await fetch(`${HTTP_BASE}/focus`, {
