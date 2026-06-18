@@ -1,25 +1,177 @@
-import { useEffect, useRef, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import {
-  PurpleClient,
-  ConfirmRequest,
+  CheckIcon,
+  ChevronDownIcon,
+  DesktopIcon,
+  EyeOpenIcon,
+  MoonIcon,
+  PaperPlaneIcon,
+  SunIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
+import * as RSelect from "@radix-ui/react-select";
+import * as RSwitch from "@radix-ui/react-switch";
+import * as Tabs from "@radix-ui/react-tabs";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import {
   Activity,
-  Health,
   Automation,
-  MemoryOverview,
+  ConfirmRequest,
+  Health,
   KbDocument,
-  MissionSummary,
+  MemoryOverview,
   MissionDetail,
+  MissionSummary,
+  PurpleClient,
 } from "./purple";
+import { type Theme, getTheme, setTheme, watchSystem } from "./theme";
 import "./App.css";
 
 type Msg = { role: "user" | "purple"; text: string };
 type Pending = { req: ConfirmRequest; resolve: (ok: boolean) => void };
-type Tab = "chat" | "monitor" | "automations" | "memory" | "missions" | "settings";
+type TabKey = "chat" | "monitor" | "automations" | "memory" | "missions" | "settings";
+const TABS: TabKey[] = ["chat", "monitor", "automations", "memory", "missions", "settings"];
 
 const client = new PurpleClient();
 
+// --- small styled primitives (Radix behavior + Tailwind looks) ---
+const BTN = {
+  primary: "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold bg-accent text-ink hover:opacity-90 transition disabled:opacity-50",
+  good: "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold bg-up text-ink hover:opacity-90 transition disabled:opacity-50",
+  outline: "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm border border-edge text-cloud hover:bg-panel transition disabled:opacity-50",
+  ghost: "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-muted hover:bg-panel transition",
+};
+const FIELD = "w-full px-3 py-2 rounded-lg bg-panel border border-edge text-cloud text-sm outline-none focus:border-accent placeholder:text-muted/70";
+
+function Btn({ variant = "primary", className = "", ...p }: { variant?: keyof typeof BTN } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button className={`${BTN[variant]} ${className}`} {...p} />;
+}
+function Field(p: React.InputHTMLAttributes<HTMLInputElement>) {
+  return <input className={FIELD} {...p} />;
+}
+function IconBtn(p: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button className="p-1.5 rounded-lg text-down hover:bg-panel transition" {...p} />;
+}
+function Chip({ tone = "muted", children }: { tone?: "muted" | "up" | "down" | "accent"; children: ReactNode }) {
+  const tones = {
+    muted: "border border-edge text-muted",
+    up: "border border-up text-up",
+    down: "border border-down text-down",
+    accent: "bg-accent text-ink",
+  };
+  return <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${tones[tone]}`}>{children}</span>;
+}
+function Panel({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex-1 overflow-y-auto p-4">
+      <div className="mx-auto flex max-w-3xl flex-col gap-3">{children}</div>
+    </div>
+  );
+}
+function Section({ children }: { children: ReactNode }) {
+  return <h3 className="text-sm font-semibold text-cloud mt-1">{children}</h3>;
+}
+function Feed({ lines, empty }: { lines: string[]; empty: string }) {
+  return (
+    <div className="rounded-xl border border-edge bg-[#120e24] p-3">
+      {lines.length ? (
+        <div className="flex flex-col gap-1">
+          {lines.map((l, i) => (
+            <span key={i} className="font-mono text-xs text-muted">
+              {l}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <span className="text-xs italic text-muted">{empty}</span>
+      )}
+    </div>
+  );
+}
+function Row({ children }: { children: ReactNode }) {
+  return <div className="flex items-center justify-between gap-3 rounded-xl border border-edge p-2.5">{children}</div>;
+}
+function Sel({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
+  return (
+    <RSelect.Root value={value} onValueChange={onChange}>
+      <RSelect.Trigger className="inline-flex min-w-[130px] items-center justify-between gap-2 rounded-lg border border-edge bg-panel px-3 py-2 text-sm text-cloud outline-none">
+        <RSelect.Value />
+        <RSelect.Icon>
+          <ChevronDownIcon />
+        </RSelect.Icon>
+      </RSelect.Trigger>
+      <RSelect.Portal>
+        <RSelect.Content className="radix-surface z-50 overflow-hidden">
+          <RSelect.Viewport className="p-1">
+            {options.map((o) => (
+              <RSelect.Item
+                key={o.value}
+                value={o.value}
+                className="relative cursor-pointer select-none rounded px-6 py-1.5 text-sm outline-none data-[highlighted]:bg-accent data-[highlighted]:text-ink"
+              >
+                <RSelect.ItemIndicator className="absolute left-1.5">
+                  <CheckIcon />
+                </RSelect.ItemIndicator>
+                <RSelect.ItemText>{o.label}</RSelect.ItemText>
+              </RSelect.Item>
+            ))}
+          </RSelect.Viewport>
+        </RSelect.Content>
+      </RSelect.Portal>
+    </RSelect.Root>
+  );
+}
+function Sw({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <RSwitch.Root
+      checked={checked}
+      onCheckedChange={onChange}
+      className="relative h-6 w-11 rounded-full bg-edge transition-colors data-[state=checked]:bg-accent"
+    >
+      <RSwitch.Thumb className="block h-5 w-5 translate-x-0.5 rounded-full bg-cloud transition-transform data-[state=checked]:translate-x-[22px]" />
+    </RSwitch.Root>
+  );
+}
+
+function ThemeToggle() {
+  const [theme, setThemeState] = useState<Theme>(getTheme());
+  useEffect(() => watchSystem(() => {}), []); // re-apply on OS change while in "system"
+  const opts: { value: Theme; icon: ReactNode; label: string }[] = [
+    { value: "light", icon: <SunIcon />, label: "Light" },
+    { value: "dark", icon: <MoonIcon />, label: "Dark" },
+    { value: "system", icon: <DesktopIcon />, label: "Windows (system)" },
+  ];
+  return (
+    <div className="flex items-center overflow-hidden rounded-full border border-edge">
+      {opts.map((o) => (
+        <Tooltip.Root key={o.value}>
+          <Tooltip.Trigger asChild>
+            <button
+              aria-label={o.label}
+              onClick={() => {
+                setTheme(o.value);
+                setThemeState(o.value);
+              }}
+              className={`px-2 py-1.5 text-xs transition ${theme === o.value ? "bg-accent text-ink" : "text-muted hover:bg-panel"}`}
+            >
+              {o.icon}
+            </button>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content sideOffset={6} className="radix-surface z-50 px-2 py-1 text-xs">
+              {o.label}
+              <Tooltip.Arrow className="fill-edge" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      ))}
+    </div>
+  );
+}
+
 export default function App() {
-  const [tab, setTab] = useState<Tab>("chat");
+  const [tab, setTab] = useState<TabKey>("chat");
   const [connected, setConnected] = useState(false);
   const [model, setModel] = useState("");
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -81,6 +233,10 @@ export default function App() {
     client.getObserve().then((o) => setObserving(!!o.observing)).catch(() => {});
   }, []);
 
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, activity, streaming]);
+
   async function toggleObserve() {
     const next = !observing;
     setObserving(next);
@@ -92,10 +248,6 @@ export default function App() {
       setObserving(!next);
     }
   }
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, activity, streaming]);
 
   function sendText() {
     const t = input.trim();
@@ -134,94 +286,126 @@ export default function App() {
     setRecording(true);
   }
 
+  const args = pending?.req.args as Record<string, unknown> | undefined;
+  const shot = args && typeof args.screenshot_b64 === "string" ? (args.screenshot_b64 as string) : "";
+
   return (
-    <div className="app">
-      <div className="header">
-        <span className={"dot" + (connected ? " on" : "")} />
-        <h1>Purple</h1>
-        {model && <span className="model">{model}</span>}
-        <button
-          className={"observe" + (observing ? " on" : "")}
-          onClick={toggleObserve}
-          title="When on, Purple can see the title of your active window to ground vague requests. Off by default; auto-stops after a few hours."
-        >
-          {observing ? "👁 Observing" : "Observe off"}
-        </button>
-      </div>
+    <div className="flex h-screen flex-col bg-ink text-cloud">
+      <header className="flex items-center gap-3 border-b border-edge px-4 py-3">
+        <span className={`h-2.5 w-2.5 rounded-full ${connected ? "bg-up" : "bg-down"}`} />
+        <h1 className="text-lg font-semibold tracking-wide">Purple</h1>
+        {model && <Chip>{model}</Chip>}
+        <div className="flex-1" />
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <button
+              onClick={toggleObserve}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition ${
+                observing ? "bg-up text-ink" : "border border-edge text-muted hover:bg-panel"
+              }`}
+            >
+              <EyeOpenIcon /> {observing ? "Observing" : "Observe off"}
+            </button>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content sideOffset={6} className="radix-surface z-50 max-w-[260px] px-2 py-1 text-xs">
+              When on, Purple can see your active window title to ground vague requests. Off by default; auto-stops after a few hours.
+              <Tooltip.Arrow className="fill-edge" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+        <ThemeToggle />
+        <a className="rounded-full border border-edge px-3 py-1.5 text-xs text-muted hover:bg-panel" href="/docs" target="_blank" rel="noreferrer">
+          API
+        </a>
+      </header>
 
-      <div className="tabs">
-        {(["chat", "monitor", "automations", "memory", "missions", "settings"] as Tab[]).map((t) => (
-          <button key={t} className={tab === t ? "tab active" : "tab"} onClick={() => setTab(t)}>
-            {t}
-          </button>
-        ))}
-      </div>
+      <Tabs.Root value={tab} onValueChange={(v) => setTab(v as TabKey)} className="flex min-h-0 flex-1 flex-col">
+        <Tabs.List className="flex gap-1 border-b border-edge px-3">
+          {TABS.map((t) => (
+            <Tabs.Trigger
+              key={t}
+              value={t}
+              className="border-b-2 border-transparent px-3 py-2 text-sm capitalize text-muted transition hover:text-cloud data-[state=active]:border-accent data-[state=active]:text-cloud"
+            >
+              {t}
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
 
-      {tab === "chat" && (
-        <>
-          <div className="messages">
+        <Tabs.Content value="chat" className="flex min-h-0 flex-1 flex-col data-[state=inactive]:hidden">
+          <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
             {messages.map((m, i) => (
-              <div key={i} className={"msg " + m.role}>
+              <div
+                key={i}
+                className={`max-w-[78%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 ${
+                  m.role === "user" ? "self-end bg-userbubble" : "self-start border border-edge bg-panel"
+                }`}
+              >
                 {m.text}
               </div>
             ))}
-            {streaming && <div className="msg purple">{streaming}</div>}
-            {activity && <div className="activity">{activity}</div>}
+            {streaming && <div className="max-w-[78%] self-start whitespace-pre-wrap rounded-2xl border border-edge bg-panel px-3.5 py-2.5">{streaming}</div>}
+            {activity && <span className="self-start text-xs italic text-muted">{activity}</span>}
             <div ref={endRef} />
           </div>
-          <div className="composer">
-            <input
-              value={input}
+          <div className="flex gap-2 border-t border-edge p-3">
+            <Field
               placeholder="Ask Purple anything…"
+              value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendText()}
             />
-            <button className={recording ? "rec" : ""} onClick={toggleMic}>
+            <Btn variant={recording ? "good" : "outline"} onClick={toggleMic}>
               {recording ? "Stop" : "Mic"}
-            </button>
-            <button onClick={sendText}>Send</button>
+            </Btn>
+            <Btn variant="primary" onClick={sendText}>
+              Send <PaperPlaneIcon />
+            </Btn>
           </div>
-        </>
-      )}
+        </Tabs.Content>
 
-      {tab === "monitor" && <MonitorPanel feed={feed} />}
-      {tab === "automations" && <AutomationsPanel />}
-      {tab === "memory" && <MemoryPanel />}
-      {tab === "missions" && <MissionsPanel />}
-      {tab === "settings" && <SettingsPanel />}
+        <Tabs.Content value="monitor" className="min-h-0 flex-1 data-[state=inactive]:hidden">
+          <MonitorPanel feed={feed} />
+        </Tabs.Content>
+        <Tabs.Content value="automations" className="min-h-0 flex-1 data-[state=inactive]:hidden">
+          <AutomationsPanel />
+        </Tabs.Content>
+        <Tabs.Content value="memory" className="min-h-0 flex-1 data-[state=inactive]:hidden">
+          <MemoryPanel />
+        </Tabs.Content>
+        <Tabs.Content value="missions" className="min-h-0 flex-1 data-[state=inactive]:hidden">
+          <MissionsPanel />
+        </Tabs.Content>
+        <Tabs.Content value="settings" className="min-h-0 flex-1 data-[state=inactive]:hidden">
+          <SettingsPanel />
+        </Tabs.Content>
+      </Tabs.Root>
 
-      {pending && (
-        <div className="confirm">
-          <div className="box">
-            <h3>Confirm action</h3>
-            <p>
-              Purple wants to run <b>{pending.req.tool}</b>:
-            </p>
-            <code>
-              {JSON.stringify(
-                Object.fromEntries(
-                  Object.entries(pending.req.args).filter(([k]) => k !== "screenshot_b64")
-                )
-              )}
-            </code>
-            {typeof (pending.req.args as any).screenshot_b64 === "string" && (
-              <img
-                className="shot"
-                src={"data:image/png;base64," + (pending.req.args as any).screenshot_b64}
-                alt="screen"
-              />
-            )}
-            <div className="row">
-              <button className="deny" onClick={() => resolveConfirm(false)}>
+      <Dialog.Root open={!!pending} onOpenChange={(o) => !o && resolveConfirm(false)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-40 bg-black/60" />
+          <Dialog.Content className="radix-surface fixed left-1/2 top-1/2 z-50 w-[460px] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 p-5">
+            <Dialog.Title className="mb-2 text-lg font-semibold">Confirm action</Dialog.Title>
+            <Dialog.Description className="mb-2 text-sm text-muted">
+              Purple wants to run <b className="text-cloud">{pending?.req.tool}</b>:
+            </Dialog.Description>
+            <pre className="overflow-x-auto rounded-lg bg-ink p-2 font-mono text-xs text-muted">
+              {pending &&
+                JSON.stringify(Object.fromEntries(Object.entries(pending.req.args).filter(([k]) => k !== "screenshot_b64")))}
+            </pre>
+            {shot && <img className="mt-3 max-w-full rounded-lg" src={"data:image/png;base64," + shot} alt="screen" />}
+            <div className="mt-4 flex justify-end gap-2">
+              <Btn variant="ghost" onClick={() => resolveConfirm(false)}>
                 Cancel
-              </button>
-              <button className="allow" onClick={() => resolveConfirm(true)}>
+              </Btn>
+              <Btn variant="good" onClick={() => resolveConfirm(true)}>
                 Allow
-              </button>
+              </Btn>
             </div>
-          </div>
-        </div>
-      )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }
@@ -246,99 +430,71 @@ function MonitorPanel({ feed }: { feed: string[] }) {
       clearInterval(id);
     };
   }, []);
-  const badge = (ok: boolean, label: string) => (
-    <span className={"badge " + (ok ? "up" : "down")}>{label}</span>
-  );
+
   return (
-    <div className="panel">
+    <Panel>
       {h ? (
-        <div className="status">
-          {badge(h.ollama, "Ollama")}
-          {badge(h.database, "Database")}
-          <span className="badge info">{h.tools} tools</span>
-          <span className="badge info">brain: {h.model}</span>
-          <span className="badge info">eyes: {h.vision_model}</span>
-          <span className="badge info">wake: {h.wake_enabled ? "on" : "off"}</span>
-          <span className="badge info">scheduler: {h.scheduler_enabled ? "on" : "off"}</span>
-          {st && <span className="badge info">up {Math.round((st.uptime_seconds || 0) / 60)}m</span>}
-          {st?.focus && (
-            <span className={"badge " + (st.focus.yielding ? "down" : "up")}>
-              {st.focus.yielding ? "GPU: yielding" : "GPU: free"}
-            </span>
-          )}
+        <div className="flex flex-wrap gap-1.5">
+          <Chip tone={h.ollama ? "up" : "down"}>Ollama</Chip>
+          <Chip tone={h.database ? "up" : "down"}>Database</Chip>
+          <Chip>{h.tools} tools</Chip>
+          <Chip>brain: {h.model}</Chip>
+          <Chip>eyes: {h.vision_model}</Chip>
+          <Chip>wake: {h.wake_enabled ? "on" : "off"}</Chip>
+          <Chip>scheduler: {h.scheduler_enabled ? "on" : "off"}</Chip>
+          {st && <Chip>up {Math.round((st.uptime_seconds || 0) / 60)}m</Chip>}
+          {st?.focus && <Chip tone={st.focus.yielding ? "down" : "up"}>{st.focus.yielding ? "GPU: yielding" : "GPU: free"}</Chip>}
         </div>
       ) : (
-        <p>Connecting…</p>
+        <span className="text-sm text-muted">Connecting…</span>
       )}
 
       {st?.focus && (
-        <div className="status">
-          <button
-            className="tab"
-            onClick={() => client.setFocus(!st.focus.manual).then((f) => setSt({ ...st, focus: f }))}
-          >
-            {st.focus.manual
-              ? "Focus mode: ON — click to release the GPU"
-              : "Focus mode: OFF — click to pause GPU work"}
-          </button>
-        </div>
+        <Btn variant="outline" className="self-start" onClick={() => client.setFocus(!st.focus.manual).then((f) => setSt({ ...st, focus: f }))}>
+          {st.focus.manual ? "Focus mode: ON — release the GPU" : "Focus mode: OFF — pause GPU work"}
+        </Btn>
       )}
 
       {m && m.enabled && (
-        <div className="metrics">
-          <div className="card"><b>{m.turns}</b><span>turns</span></div>
-          <div className="card"><b>{m.llm_calls}</b><span>LLM calls</span></div>
-          <div className="card"><b>{m.llm_avg_ms} ms</b><span>avg LLM</span></div>
-          <div className="card"><b>{m.tool_calls}</b><span>tool calls</span></div>
-          <div className="card"><b>{m.tool_avg_ms} ms</b><span>avg tool</span></div>
+        <div className="flex flex-wrap gap-2">
+          {[
+            [m.turns, "turns"],
+            [m.llm_calls, "LLM calls"],
+            [`${m.llm_avg_ms} ms`, "avg LLM"],
+            [m.tool_calls, "tool calls"],
+            [`${m.tool_avg_ms} ms`, "avg tool"],
+          ].map(([v, label], i) => (
+            <div key={i} className="min-w-[96px] rounded-xl border border-edge bg-panel px-3 py-2">
+              <div className="text-lg font-semibold">{v}</div>
+              <div className="text-xs text-muted">{label}</div>
+            </div>
+          ))}
         </div>
       )}
 
       {m && m.tools && m.tools.length > 0 && (
         <>
-          <h3>Tool usage</h3>
-          <div className="feed">
-            {m.tools.map((t: any, i: number) => (
-              <div key={i}>
-                {t.tool} ({t.ok === "true" ? "ok" : "fail"}): {t.count}
-              </div>
-            ))}
-          </div>
+          <Section>Tool usage</Section>
+          <Feed lines={m.tools.map((t: any) => `${t.tool} (${t.ok === "true" ? "ok" : "fail"}): ${t.count}`)} empty="—" />
         </>
       )}
 
-      <h3>Live activity</h3>
-      <div className="feed">
-        {feed.length ? feed.slice().reverse().map((l, i) => <div key={i}>{l}</div>) : <em>quiet…</em>}
-      </div>
+      <Section>Live activity</Section>
+      <Feed lines={feed.slice().reverse()} empty="quiet…" />
 
-      <h3>Recent logs</h3>
-      <div className="feed">
-        {logs.length ? (
-          logs.slice().reverse().map((l, i) => <div key={i}>{l}</div>)
-        ) : (
-          <em>no logs yet…</em>
-        )}
-      </div>
-    </div>
+      <Section>Recent logs</Section>
+      <Feed lines={logs.slice().reverse()} empty="no logs yet…" />
+    </Panel>
   );
 }
 
 function AutomationsPanel() {
-  const empty = {
-    name: "",
-    effect: "speak",
-    keywords: "",
-    source: "",
-    min_priority: "normal",
-    action: "",
-  };
+  const empty = { name: "", effect: "speak", keywords: "", source: "any", min_priority: "normal", action: "" };
   const [rules, setRules] = useState<Automation[]>([]);
   const [draft, setDraft] = useState(empty);
   const [msg, setMsg] = useState("");
 
-  const load = () =>
-    client.listAutomations().then((r) => setRules(r.rules || [])).catch(() => {});
+  const load = () => client.listAutomations().then((r) => setRules(r.rules || [])).catch(() => {});
   useEffect(() => {
     load();
   }, []);
@@ -352,7 +508,7 @@ function AutomationsPanel() {
       name: draft.name.trim(),
       effect: draft.effect,
       keywords: draft.keywords.split(",").map((s) => s.trim()).filter(Boolean),
-      source: draft.source.trim(),
+      source: draft.source === "any" ? "" : draft.source,
       min_priority: draft.min_priority,
       action: draft.action.trim(),
     });
@@ -362,91 +518,65 @@ function AutomationsPanel() {
   }
 
   return (
-    <div className="panel">
-      <p className="hint">
-        Rules shape what Purple tells you — <b>speak</b> gives a gentle nudge even mid-game,{" "}
-        <b>mute</b> stays silent, <b>notify</b> is normal. They only change notifications; they
-        never run actions on their own.
+    <Panel>
+      <p className="text-sm text-muted">
+        Rules shape what Purple tells you — <b className="text-cloud">speak</b> gives a gentle nudge even mid-game,{" "}
+        <b className="text-cloud">mute</b> stays silent, <b className="text-cloud">notify</b> is normal. They only change
+        notifications; they never run actions on their own.
       </p>
 
-      <div className="addform">
-        <input
-          placeholder="Rule name (e.g. Hear my boss)"
-          value={draft.name}
-          onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-        />
-        <input
-          placeholder="keywords, comma-separated (blank = any)"
-          value={draft.keywords}
-          onChange={(e) => setDraft({ ...draft, keywords: e.target.value })}
-        />
-        <select value={draft.source} onChange={(e) => setDraft({ ...draft, source: e.target.value })}>
-          <option value="">any source</option>
-          {["email", "call", "message", "calendar", "system"].map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={draft.min_priority}
-          onChange={(e) => setDraft({ ...draft, min_priority: e.target.value })}
-        >
-          {["low", "normal", "important"].map((p) => (
-            <option key={p} value={p}>
-              ≥ {p}
-            </option>
-          ))}
-        </select>
-        <select value={draft.effect} onChange={(e) => setDraft({ ...draft, effect: e.target.value })}>
-          {["speak", "mute", "notify"].map((x) => (
-            <option key={x} value={x}>
-              {x}
-            </option>
-          ))}
-        </select>
-        <input
-          placeholder="run a tool (optional)"
-          value={draft.action}
-          onChange={(e) => setDraft({ ...draft, action: e.target.value })}
-        />
-        <button onClick={add}>Add rule</button>
+      <div className="flex flex-col gap-2 rounded-xl border border-edge bg-panel p-3">
+        <Field placeholder="Rule name (e.g. Hear my boss)" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+        <Field placeholder="keywords, comma-separated (blank = any)" value={draft.keywords} onChange={(e) => setDraft({ ...draft, keywords: e.target.value })} />
+        <div className="flex flex-wrap gap-2">
+          <Sel
+            value={draft.source}
+            onChange={(v) => setDraft({ ...draft, source: v })}
+            options={[
+              { value: "any", label: "any source" },
+              ...["email", "call", "message", "calendar", "system"].map((s) => ({ value: s, label: s })),
+            ]}
+          />
+          <Sel
+            value={draft.min_priority}
+            onChange={(v) => setDraft({ ...draft, min_priority: v })}
+            options={["low", "normal", "important"].map((p) => ({ value: p, label: `≥ ${p}` }))}
+          />
+          <Sel value={draft.effect} onChange={(v) => setDraft({ ...draft, effect: v })} options={["speak", "mute", "notify"].map((x) => ({ value: x, label: x }))} />
+        </div>
+        <Field placeholder="run a tool (optional)" value={draft.action} onChange={(e) => setDraft({ ...draft, action: e.target.value })} />
+        <Btn variant="primary" className="self-start" onClick={add}>
+          Add rule
+        </Btn>
       </div>
-      <span className="hint">
+      <span className="text-xs text-muted">
         {msg || "Actions run under the autonomy setting (Settings → autonomy: notify / confirm / act)."}
       </span>
 
-      <div className="rules">
-        {rules.length === 0 && <em className="hint">No automations yet — add one above.</em>}
-        {rules.map((r) => (
-          <div key={r.id} className={"rule" + (r.enabled ? "" : " off")}>
-            <div className="rule-main">
-              <b>{r.name}</b>
-              <div className="rule-meta">
-                <span className={"badge eff-" + r.effect}>{r.effect}</span>
-                <span className="badge info">{r.source || "any source"}</span>
-                <span className="badge info">≥ {r.min_priority}</span>
-                {r.keywords.length > 0 && (
-                  <span className="badge info">{r.keywords.join(", ")}</span>
-                )}
-                {r.action && <span className="badge eff-speak">▶ {r.action}</span>}
-              </div>
-            </div>
-            <div className="rule-actions">
-              <button
-                className="tab"
-                onClick={() => client.toggleAutomation(r.id, !r.enabled).then(load)}
-              >
-                {r.enabled ? "On" : "Off"}
-              </button>
-              <button className="tab del" onClick={() => client.removeAutomation(r.id).then(load)}>
-                Delete
-              </button>
+      {rules.length === 0 && <span className="text-xs text-muted">No automations yet — add one above.</span>}
+      {rules.map((r) => (
+        <Row key={r.id}>
+          <div className={r.enabled ? "" : "opacity-50"}>
+            <div className="font-semibold">{r.name}</div>
+            <div className="mt-1 flex flex-wrap gap-1">
+              <Chip tone={r.effect === "mute" ? "muted" : "accent"}>{r.effect}</Chip>
+              <Chip>{r.source || "any source"}</Chip>
+              <Chip>≥ {r.min_priority}</Chip>
+              {r.keywords.length > 0 && <Chip>{r.keywords.join(", ")}</Chip>}
+              {r.action && <Chip tone="accent">▶ {r.action}</Chip>}
             </div>
           </div>
-        ))}
-      </div>
-    </div>
+          <div className="flex items-center gap-2">
+            <Btn variant="outline" onClick={() => client.toggleAutomation(r.id, !r.enabled).then(load)}>
+              {r.enabled ? "On" : "Off"}
+            </Btn>
+            <IconBtn onClick={() => client.removeAutomation(r.id).then(load)}>
+              <TrashIcon />
+            </IconBtn>
+          </div>
+        </Row>
+      ))}
+    </Panel>
   );
 }
 
@@ -492,137 +622,137 @@ function MemoryPanel() {
     setResults(r.facts || []);
   }
 
-  if (!mem) return <div className="panel"><p>Loading…</p></div>;
+  if (!mem)
+    return (
+      <Panel>
+        <span className="text-sm text-muted">Loading…</span>
+      </Panel>
+    );
   const facts = results ?? mem.facts;
 
   return (
-    <div className="panel">
-      <h3>What Purple knows</h3>
-      <div className="status">
-        <span className="badge info">auto-learn: {mem.auto_memory ? mem.auto_memory_mode : "off"}</span>
-        <select
+    <Panel>
+      <Section>What Purple knows</Section>
+      <div className="flex items-center gap-2">
+        <Chip>auto-learn: {mem.auto_memory ? mem.auto_memory_mode : "off"}</Chip>
+        <Sel
           value={mem.auto_memory_mode}
-          onChange={async (e) => {
-            await client.saveConfig({ auto_memory_mode: e.target.value });
-            setMem({ ...mem, auto_memory_mode: e.target.value });
+          onChange={async (v) => {
+            await client.saveConfig({ auto_memory_mode: v });
+            setMem({ ...mem, auto_memory_mode: v });
           }}
-        >
-          {["moderate", "high", "aggressive"].map((m) => (
-            <option key={m} value={m}>
-              learn: {m}
-            </option>
-          ))}
-        </select>
+          options={["moderate", "high", "aggressive"].map((x) => ({ value: x, label: `learn: ${x}` }))}
+        />
       </div>
 
-      <h3>Profile</h3>
-      <div className="form">
+      <Section>Profile</Section>
+      <div className="flex flex-col gap-2">
         {Object.entries(mem.profile).map(([k, v]) => (
-          <label key={k} className="frow">
-            <span>{k.replace(/_/g, " ")}</span>
-            <input
-              type="text"
-              defaultValue={v}
-              onBlur={(e) => client.setProfileField(k, e.target.value).then(load)}
-            />
+          <label key={k} className="flex items-center gap-3">
+            <span className="w-32 text-sm text-muted">{k.replace(/_/g, " ")}</span>
+            <Field defaultValue={v} onBlur={(e) => client.setProfileField(k, e.target.value).then(load)} />
           </label>
         ))}
-      </div>
-      <div className="addform">
-        <input placeholder="field (e.g. location)" value={newKey} onChange={(e) => setNewKey(e.target.value)} />
-        <input placeholder="value" value={newVal} onChange={(e) => setNewVal(e.target.value)} />
-        <button
-          onClick={async () => {
-            if (!newKey.trim()) return;
-            await client.setProfileField(newKey.trim(), newVal.trim());
-            setNewKey("");
-            setNewVal("");
-            load();
-          }}
-        >
-          Set field
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <Field placeholder="field (e.g. location)" value={newKey} onChange={(e) => setNewKey(e.target.value)} />
+          <Field placeholder="value" value={newVal} onChange={(e) => setNewVal(e.target.value)} />
+          <Btn
+            variant="outline"
+            onClick={async () => {
+              if (!newKey.trim()) return;
+              await client.setProfileField(newKey.trim(), newVal.trim());
+              setNewKey("");
+              setNewVal("");
+              load();
+            }}
+          >
+            Set field
+          </Btn>
+        </div>
       </div>
 
       {mem.people.length > 0 && (
         <>
-          <h3>People</h3>
-          <div className="rules">
-            {mem.people.map((p) => (
-              <div key={p.id} className="rule">
-                <div className="rule-main">
-                  <b>{p.name}</b>
-                  <div className="rule-meta">
-                    {p.relation && <span className="badge info">{p.relation}</span>}
-                    {p.aliases.length > 0 && <span className="badge info">{p.aliases.join(", ")}</span>}
-                  </div>
-                </div>
-                <div className="rule-actions">
-                  <button className="tab del" onClick={() => client.deletePerson(p.id).then(load)}>
-                    Forget
-                  </button>
+          <Section>People</Section>
+          {mem.people.map((p) => (
+            <Row key={p.id}>
+              <div>
+                <div className="font-semibold">{p.name}</div>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {p.relation && <Chip>{p.relation}</Chip>}
+                  {p.aliases.length > 0 && <Chip>{p.aliases.join(", ")}</Chip>}
                 </div>
               </div>
-            ))}
-          </div>
+              <IconBtn onClick={() => client.deletePerson(p.id).then(load)}>
+                <TrashIcon />
+              </IconBtn>
+            </Row>
+          ))}
         </>
       )}
 
-      <h3>Knowledge (documents)</h3>
-      <div className="addform">
-        <input
-          placeholder="file or folder path to learn…"
-          value={ingestPath}
-          onChange={(e) => setIngestPath(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && ingest()}
-        />
-        <button onClick={ingest}>Learn</button>
+      <Section>Knowledge (documents)</Section>
+      <div className="flex flex-wrap gap-2">
+        <div className="min-w-[220px] flex-1">
+          <Field
+            placeholder="file or folder path to learn…"
+            value={ingestPath}
+            onChange={(e) => setIngestPath(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && ingest()}
+          />
+        </div>
+        <Btn variant="outline" onClick={ingest}>
+          Learn
+        </Btn>
       </div>
-      <span className="hint">{ingestMsg}</span>
-      <div className="rules">
-        {docs.length === 0 && <em className="hint">No documents learned yet.</em>}
-        {docs.map((d) => (
-          <div key={d.id} className="rule">
-            <div className="rule-main">
-              <b>{d.title}</b>
-              <div className="rule-meta">
-                <span className="badge info">{d.chunks} passages</span>
-                <span className="badge info">{d.path}</span>
-              </div>
-            </div>
-            <div className="rule-actions">
-              <button className="tab del" onClick={() => client.removeDocument(d.id).then(loadDocs)}>
-                Remove
-              </button>
+      {ingestMsg && <span className="text-xs text-muted">{ingestMsg}</span>}
+      {docs.length === 0 && <span className="text-xs text-muted">No documents learned yet.</span>}
+      {docs.map((d) => (
+        <Row key={d.id}>
+          <div>
+            <div className="font-semibold">{d.title}</div>
+            <div className="mt-1 flex flex-wrap gap-1">
+              <Chip>{d.chunks} passages</Chip>
+              <Chip>{d.path}</Chip>
             </div>
           </div>
-        ))}
-      </div>
+          <IconBtn onClick={() => client.removeDocument(d.id).then(loadDocs)}>
+            <TrashIcon />
+          </IconBtn>
+        </Row>
+      ))}
 
-      <h3>Facts</h3>
-      <div className="addform">
-        <input
-          placeholder="search what Purple knows…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && search()}
-        />
-        <button onClick={search}>Search</button>
+      <Section>Facts</Section>
+      <div className="flex flex-wrap gap-2">
+        <div className="min-w-[220px] flex-1">
+          <Field
+            placeholder="search what Purple knows…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && search()}
+          />
+        </div>
+        <Btn variant="outline" onClick={search}>
+          Search
+        </Btn>
         {results !== null && (
-          <button
-            className="tab"
+          <Btn
+            variant="ghost"
             onClick={() => {
               setResults(null);
               setQuery("");
             }}
           >
             Clear
-          </button>
+          </Btn>
         )}
       </div>
-      <div className="addform">
-        <input placeholder="teach Purple a fact…" value={newFact} onChange={(e) => setNewFact(e.target.value)} />
-        <button
+      <div className="flex flex-wrap gap-2">
+        <div className="min-w-[220px] flex-1">
+          <Field placeholder="teach Purple a fact…" value={newFact} onChange={(e) => setNewFact(e.target.value)} />
+        </div>
+        <Btn
+          variant="outline"
           onClick={async () => {
             if (!newFact.trim()) return;
             await client.addFact(newFact.trim());
@@ -631,48 +761,48 @@ function MemoryPanel() {
           }}
         >
           Add fact
-        </button>
+        </Btn>
       </div>
-      <div className="rules">
-        {facts.length === 0 && <em className="hint">Nothing yet.</em>}
-        {facts.map((f) => (
-          <div key={f.id} className="rule">
-            <div className="rule-main">
-              <span>{f.text}</span>
-              <div className="rule-meta">
-                <span className="badge info">{f.category}</span>
-              </div>
-            </div>
-            <div className="rule-actions">
-              <button className="tab del" onClick={() => client.deleteFact(f.id).then(() => {
-                setResults(null);
-                load();
-              })}>
-                Forget
-              </button>
+      {facts.length === 0 && <span className="text-xs text-muted">Nothing yet.</span>}
+      {facts.map((f) => (
+        <Row key={f.id}>
+          <div>
+            <div>{f.text}</div>
+            <div className="mt-1">
+              <Chip>{f.category}</Chip>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
+          <IconBtn
+            onClick={() =>
+              client.deleteFact(f.id).then(() => {
+                setResults(null);
+                load();
+              })
+            }
+          >
+            <TrashIcon />
+          </IconBtn>
+        </Row>
+      ))}
+    </Panel>
   );
 }
 
 function VoiceEnroll() {
   const [voices, setVoices] = useState<string[]>([]);
-  const [info, setInfo] = useState<{ available: boolean; enforced: boolean }>({
-    available: false,
-    enforced: false,
-  });
+  const [info, setInfo] = useState<{ available: boolean; enforced: boolean }>({ available: false, enforced: false });
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
   const [recording, setRecording] = useState(false);
 
   const load = () =>
-    client.voices().then((r) => {
-      setVoices(r.voices || []);
-      setInfo({ available: r.available, enforced: r.enforced });
-    }).catch(() => {});
+    client
+      .voices()
+      .then((r) => {
+        setVoices(r.voices || []);
+        setInfo({ available: r.available, enforced: r.enforced });
+      })
+      .catch(() => {});
   useEffect(() => {
     load();
   }, []);
@@ -701,34 +831,28 @@ function VoiceEnroll() {
   }
 
   return (
-    <div className="panel" style={{ padding: 0 }}>
-      <h3>Voice access</h3>
-      <div className="status">
-        <span className={"badge " + (info.enforced ? "up" : "info")}>
-          {info.enforced ? "locked: only enrolled voices" : "not enforced yet"}
-        </span>
-        {!info.available && <span className="badge down">speaker model not installed</span>}
+    <div className="flex flex-col gap-2">
+      <Section>Voice access</Section>
+      <div className="flex flex-wrap gap-1.5">
+        <Chip tone={info.enforced ? "up" : "muted"}>{info.enforced ? "locked: only enrolled voices" : "not enforced yet"}</Chip>
+        {!info.available && <Chip tone="down">speaker model not installed</Chip>}
       </div>
-      <div className="addform">
-        <input placeholder="your name" value={name} onChange={(e) => setName(e.target.value)} />
-        <button onClick={record} disabled={recording || !info.available}>
+      <div className="flex flex-wrap gap-2">
+        <Field placeholder="your name" value={name} onChange={(e) => setName(e.target.value)} />
+        <Btn variant="outline" onClick={record} disabled={recording || !info.available}>
           {recording ? "Recording…" : "Enroll (record 4s)"}
-        </button>
+        </Btn>
       </div>
-      <span className="hint">{status}</span>
-      <div className="rules">
-        {voices.length === 0 && <em className="hint">No voices enrolled yet.</em>}
-        {voices.map((v) => (
-          <div key={v} className="rule">
-            <div className="rule-main"><b>{v}</b></div>
-            <div className="rule-actions">
-              <button className="tab del" onClick={() => client.removeVoice(v).then(load)}>
-                Remove
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+      {status && <span className="text-xs text-muted">{status}</span>}
+      {voices.length === 0 && <span className="text-xs text-muted">No voices enrolled yet.</span>}
+      {voices.map((v) => (
+        <Row key={v}>
+          <div className="font-semibold">{v}</div>
+          <IconBtn onClick={() => client.removeVoice(v).then(load)}>
+            <TrashIcon />
+          </IconBtn>
+        </Row>
+      ))}
     </div>
   );
 }
@@ -766,64 +890,59 @@ function MissionsPanel() {
   }
 
   return (
-    <div className="panel">
-      <h3>Missions</h3>
-      <div className="addform">
-        <input
-          placeholder="give Purple a goal to carry out…"
-          value={goal}
-          onChange={(e) => setGoal(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && start()}
-        />
-        <button onClick={start}>Start mission</button>
+    <Panel>
+      <Section>Missions</Section>
+      <div className="flex flex-wrap gap-2">
+        <div className="min-w-[240px] flex-1">
+          <Field
+            placeholder="give Purple a goal to carry out…"
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && start()}
+          />
+        </div>
+        <Btn variant="primary" onClick={start}>
+          Start mission
+        </Btn>
       </div>
-      <span className="hint">
-        She plans + works it in the background; risky steps pause for your approval.
-      </span>
+      <span className="text-xs text-muted">She plans + works it in the background; risky steps pause for your approval.</span>
 
-      <div className="rules">
-        {missions.length === 0 && <em className="hint">No missions yet.</em>}
-        {missions.map((m) => (
-          <div key={m.id} className="rule" style={{ flexDirection: "column", alignItems: "stretch" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-              <div className="rule-main">
-                <b onClick={() => toggle(m.id)} style={{ cursor: "pointer" }}>
-                  #{m.id} {m.goal}
-                </b>
-                <div className="rule-meta">
-                  <span className={"badge " + (m.status === "blocked" ? "down" : "info")}>{m.status}</span>
-                </div>
+      {missions.length === 0 && <span className="text-xs text-muted">No missions yet.</span>}
+      {missions.map((m) => (
+        <div key={m.id} className="rounded-xl border border-edge p-2.5">
+          <div className="flex justify-between gap-3">
+            <div>
+              <div className="cursor-pointer font-semibold" onClick={() => toggle(m.id)}>
+                #{m.id} {m.goal}
               </div>
-              <div className="rule-actions">
-                {m.status === "blocked" && (
-                  <button className="tab" onClick={() => client.resumeMission(m.id).then(load)}>
-                    Approve
-                  </button>
-                )}
-                {(m.status === "running" || m.status === "blocked" || m.status === "planned") && (
-                  <button className="tab del" onClick={() => client.cancelMission(m.id).then(load)}>
-                    Cancel
-                  </button>
-                )}
-                <button className="tab" onClick={() => toggle(m.id)}>
-                  {open[m.id] ? "Hide" : "Steps"}
-                </button>
+              <div className="mt-1">
+                <Chip tone={m.status === "blocked" ? "down" : "muted"}>{m.status}</Chip>
               </div>
             </div>
-            {open[m.id] && (
-              <div className="feed" style={{ marginTop: 8 }}>
-                {open[m.id].steps.map((s) => (
-                  <div key={s.id}>
-                    [{s.status}] {s.title}
-                    {s.result ? ` — ${s.result.slice(0, 120)}` : ""}
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              {m.status === "blocked" && (
+                <Btn variant="outline" onClick={() => client.resumeMission(m.id).then(load)}>
+                  Approve
+                </Btn>
+              )}
+              {(m.status === "running" || m.status === "blocked" || m.status === "planned") && (
+                <Btn variant="ghost" onClick={() => client.cancelMission(m.id).then(load)}>
+                  Cancel
+                </Btn>
+              )}
+              <Btn variant="ghost" onClick={() => toggle(m.id)}>
+                {open[m.id] ? "Hide" : "Steps"}
+              </Btn>
+            </div>
           </div>
-        ))}
-      </div>
-    </div>
+          {open[m.id] && (
+            <div className="mt-2">
+              <Feed lines={open[m.id].steps.map((s) => `[${s.status}] ${s.title}${s.result ? ` — ${s.result.slice(0, 120)}` : ""}`)} empty="—" />
+            </div>
+          )}
+        </div>
+      ))}
+    </Panel>
   );
 }
 
@@ -839,7 +958,12 @@ function SettingsPanel() {
     });
   }, []);
 
-  if (!cfg) return <div className="panel"><p>Loading…</p></div>;
+  if (!cfg)
+    return (
+      <Panel>
+        <span className="text-sm text-muted">Loading…</span>
+      </Panel>
+    );
   const fields = Object.keys(cfg).filter((k) => !k.endsWith("_set"));
   const set = (k: string, v: any) => setDraft((d) => ({ ...d, [k]: v }));
 
@@ -851,47 +975,34 @@ function SettingsPanel() {
       return;
     }
     const r = await client.saveConfig(updates);
-    setMsg(
-      `Saved: ${r.applied.join(", ")}.` +
-        (r.restart_needed.length ? ` Restart needed for: ${r.restart_needed.join(", ")}.` : "")
-    );
+    setMsg(`Saved: ${r.applied.join(", ")}.` + (r.restart_needed.length ? ` Restart needed for: ${r.restart_needed.join(", ")}.` : ""));
     setCfg({ ...cfg, ...updates });
   }
 
   return (
-    <div className="panel">
+    <Panel>
       <VoiceEnroll />
-      <h3>Configuration</h3>
-      <div className="form">
+      <Section>Configuration</Section>
+      <div className="flex flex-col gap-2">
         {fields.map((k) => (
-          <label key={k} className="frow">
-            <span>{k}</span>
+          <label key={k} className="flex items-center justify-between gap-3">
+            <span className="text-sm text-muted">{k}</span>
             {typeof cfg![k] === "boolean" ? (
-              <input
-                type="checkbox"
-                checked={!!draft[k]}
-                onChange={(e) => set(k, e.target.checked)}
-              />
+              <Sw checked={!!draft[k]} onChange={(v) => set(k, v)} />
             ) : typeof cfg![k] === "number" ? (
-              <input
-                type="number"
-                value={draft[k]}
-                onChange={(e) => set(k, Number(e.target.value))}
-              />
+              <input className={`${FIELD} max-w-[200px]`} type="number" value={draft[k]} onChange={(e) => set(k, Number(e.target.value))} />
             ) : (
-              <input
-                type="text"
-                value={draft[k] ?? ""}
-                onChange={(e) => set(k, e.target.value)}
-              />
+              <input className={`${FIELD} max-w-[260px]`} type="text" value={draft[k] ?? ""} onChange={(e) => set(k, e.target.value)} />
             )}
           </label>
         ))}
       </div>
-      <div className="saverow">
-        <button onClick={save}>Save</button>
-        <span className="hint">{msg}</span>
+      <div className="flex items-center gap-3">
+        <Btn variant="primary" onClick={save}>
+          Save
+        </Btn>
+        {msg && <span className="text-xs text-muted">{msg}</span>}
       </div>
-    </div>
+    </Panel>
   );
 }

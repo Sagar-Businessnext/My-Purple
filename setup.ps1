@@ -79,7 +79,26 @@ if (-not (Test-Path "$kdir\kokoro-v1.0.onnx")) {
     } catch { Warn "Kokoro download failed - grab kokoro-v1.0.onnx + voices-v1.0.bin into $kdir manually" }
 } else { Ok "Kokoro voice model present" }
 
+Step "Web UI (React, built with Vite - served at /ui/)"
+if (-not (Have node)) {
+    Warn "Node.js not found - installing via winget (or get it from nodejs.org)..."
+    try { winget install -e --id OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements } catch { Warn "winget install failed - install Node.js LTS manually, then re-run." }
+}
+if (Have npm) {
+    Push-Location frontend
+    try {
+        npm install --no-audit --no-fund
+        npm run build
+        Ok "Web UI built -> opens at http://127.0.0.1:8765/ui/ on startup"
+    } catch { Warn "Web UI build failed - run manually: cd frontend; npm install; npm run build" }
+    Pop-Location
+} else {
+    Warn "npm not on PATH yet (open a NEW terminal after installing Node), then: cd frontend; npm install; npm run build"
+}
+
 Step "Self-check"
 python -m purple.selfcheck
 
 Write-Host "`nSetup complete. Start Purple with:  purple   (or: python -m purple.run)" -ForegroundColor Cyan
+Write-Host "The web UI opens automatically at http://127.0.0.1:8765/ui/" -ForegroundColor Cyan
+Write-Host "For the native desktop app (Tauri), run:  powershell -ExecutionPolicy Bypass -File scripts\build_tauri.ps1" -ForegroundColor DarkGray

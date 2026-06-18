@@ -3,6 +3,7 @@ the engine muting/escalating events. Pure logic + fakes — no DB."""
 
 from __future__ import annotations
 
+from purple.config import settings
 from purple.triggers import engine as engine_mod
 from purple.triggers.engine import TriggerEngine
 from purple.triggers.priority import IMPORTANT, NORMAL, Event

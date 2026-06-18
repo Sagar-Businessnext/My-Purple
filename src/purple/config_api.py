@@ -53,6 +53,7 @@ EDITABLE = [
     "enable_tray",
     "enable_push_to_talk",
     "ptt_hotkey",
+    "open_ui_on_start",
     "browser_headless",
     "browser_cdp_url",
     "ha_base_url",

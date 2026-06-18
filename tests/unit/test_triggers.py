@@ -65,7 +65,7 @@ async def _patch_channels(monkeypatch):
 
 
 async def test_notify_speaks_when_free(monkeypatch):
-    spoke, fed = await _patch_channels(monkeypatch)
+    spoke, _fed = await _patch_channels(monkeypatch)
     monkeypatch.setattr(notify_mod, "in_quiet_hours", lambda: False)
     monkeypatch.setattr(focus, "should_yield_gpu", lambda: False)
     r = await Notifier().notify(Event("email", "Hello", priority=NORMAL))
@@ -73,7 +73,7 @@ async def test_notify_speaks_when_free(monkeypatch):
 
 
 async def test_notify_silent_while_gaming(monkeypatch):
-    spoke, fed = await _patch_channels(monkeypatch)
+    spoke, _fed = await _patch_channels(monkeypatch)
     monkeypatch.setattr(notify_mod, "in_quiet_hours", lambda: False)
     monkeypatch.setattr(focus, "should_yield_gpu", lambda: True)  # gaming
     r = await Notifier().notify(Event("email", "Hello", priority=NORMAL))
@@ -82,7 +82,7 @@ async def test_notify_silent_while_gaming(monkeypatch):
 
 
 async def test_notify_breakthrough_and_debounce(monkeypatch):
-    spoke, fed = await _patch_channels(monkeypatch)
+    spoke, _fed = await _patch_channels(monkeypatch)
     monkeypatch.setattr(notify_mod, "in_quiet_hours", lambda: True)
     monkeypatch.setattr(focus, "should_yield_gpu", lambda: True)  # gaming + quiet
     n = Notifier()

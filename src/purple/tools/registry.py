@@ -7,9 +7,9 @@ Risky tools (requires_confirmation=True) are gated behind the human approver.
 
 from __future__ import annotations
 
-import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+import time
 from typing import Any
 
 from purple import observability as obs

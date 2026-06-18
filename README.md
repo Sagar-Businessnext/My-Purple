@@ -128,7 +128,13 @@ Invoke-RestMethod http://127.0.0.1:8765/health | ConvertTo-Json
 Invoke-RestMethod -Method Post http://127.0.0.1:8765/chat -ContentType 'application/json' -Body '{"message":"Hi Purple, who are you?"}'
 ```
 
-The desktop UI lives in `frontend/` (React + Tauri) — see `frontend/README.md`.
+**UI.** One React app (in `frontend/`) with two front doors, no duplicated code:
+`setup.ps1` builds it with **Vite** and Purple serves it at `http://127.0.0.1:8765/ui/`,
+opening it automatically on startup (chat with streaming replies, activity feed, Observe
+toggle, confirm prompts, plus the Monitor/Automations/Memory/Missions/Settings tabs).
+Disable auto-open with `PURPLE_OPEN_UI_ON_START=false`. For a **native desktop window**, the
+same app wraps in **Tauri** — run `scripts\build_tauri.ps1` (needs Node + Rust). See
+`frontend/README.md`.
 
 ## Project layout
 
@@ -137,6 +143,7 @@ src/purple/
   config.py            all settings (env-driven, PURPLE_* vars)
   app.py               FastAPI app: chat / ws / voice + all REST endpoints
   run.py · cli.py      server entry point · terminal chat
+  web/                 Vite build output (the React UI), served at /ui/ — generated
   selfcheck.py         live diagnostic (`python -m purple.selfcheck`)
   service.py           single-instance background service
   safety.py            commit-confirmation guard for risky actions
@@ -165,8 +172,10 @@ pyproject.toml         metadata + ruff / mypy / pytest config (canonical)
 doctor.py              environment diagnostic
 setup.ps1              one-command Windows setup
 RUN_TONIGHT.txt        copy-paste run + feature-testing guide
+scripts/build_tauri.ps1  build/run the native desktop app (Tauri)
 .claude/               bnac agents, commands, skills, logs — the dev workflow
-frontend/              React + Tauri UI (see frontend/README.md)
+frontend/              the React app (Vite web build + optional Tauri) — see frontend/README.md
+  frontend/ui-src/     App.tsx · purple.ts · App.css · main.tsx  (one shared source)
 docs/                  FIRSTRUN, ALWAYS_ON, OBSERVABILITY, EMAIL_CALENDAR, wake_word, roadmap
 ```
 

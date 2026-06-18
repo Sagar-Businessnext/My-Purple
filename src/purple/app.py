@@ -11,11 +11,12 @@ from __future__ import annotations
 
 import asyncio
 import base64
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager, suppress
+from pathlib import Path
 import tempfile
 
-from fastapi import FastAPI, File, Form, UploadFile, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, File, Form, Request, Response, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -120,6 +121,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         from purple import greeting
 
         app.state.greeting_task = asyncio.create_task(greeting.greet_on_boot())
+    if settings.open_ui_on_start:
+        import threading
+        import webbrowser
+
+        # Open after a short delay so the server is accepting connections first.
+        threading.Timer(1.5, lambda: webbrowser.open(settings.ui_url)).start()
     log.info(
         "purple_ready",
         model=settings.llm_model,
@@ -152,7 +159,7 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def _auth(request, call_next):
+async def _auth(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     """Require X-Purple-Token for non-localhost requests when an api_token is set."""
     from fastapi.responses import JSONResponse
 
@@ -161,6 +168,56 @@ async def _auth(request, call_next):
     if settings.api_token and not local and request.headers.get("X-Purple-Token") != settings.api_token:
         return JSONResponse({"error": "unauthorized"}, status_code=401)
     return await call_next(request)
+
+
+# --- Web UI: the React app, built by Vite into web/ and served here at /ui/ ---
+_WEB_DIR = (Path(__file__).resolve().parent / "web").resolve()
+_UI_PLACEHOLDER = (
+    "<!doctype html><meta charset='utf-8'><title>Purple</title>"
+    "<body style='font-family:system-ui;background:#0e0b1a;color:#ece9fb;padding:40px'>"
+    "<h1>Purple's UI isn't built yet</h1>"
+    "<p>Run <code>setup.ps1</code>, or build it manually:</p>"
+    "<pre>cd frontend\nnpm install\nnpm run build</pre>"
+    "<p>The API is live in the meantime at <a style='color:#a78bfa' href='/docs'>/docs</a>.</p>"
+    "</body>"
+)
+
+
+def _serve_web(rel: str) -> Response:
+    """Serve a file from the built web/ dir; SPA-fallback to index.html; placeholder if unbuilt."""
+    from fastapi.responses import FileResponse, HTMLResponse
+
+    target = (_WEB_DIR / rel).resolve()
+    if (target == _WEB_DIR or _WEB_DIR in target.parents) and target.is_file():
+        return FileResponse(str(target))
+    index = _WEB_DIR / "index.html"
+    if index.is_file():
+        return FileResponse(str(index))  # SPA fallback for client-side routes
+    return HTMLResponse(_UI_PLACEHOLDER)
+
+
+@app.get("/")
+async def _root() -> Response:
+    from fastapi.responses import RedirectResponse
+
+    return RedirectResponse(url="/ui/")
+
+
+@app.get("/ui", include_in_schema=False)
+async def _ui_root() -> Response:
+    from fastapi.responses import RedirectResponse
+
+    return RedirectResponse(url="/ui/")  # trailing slash so relative asset paths resolve
+
+
+@app.get("/ui/", include_in_schema=False)
+async def _ui_index() -> Response:
+    return _serve_web("index.html")
+
+
+@app.get("/ui/{path:path}", include_in_schema=False)
+async def _ui_asset(path: str) -> Response:
+    return _serve_web(path)
 
 
 async def _db_ok() -> bool:
@@ -172,7 +229,7 @@ async def _db_ok() -> bool:
         async with engine.connect() as conn:
             await conn.execute(text("SELECT 1"))
         return True
-    except Exception:  # noqa: BLE001
+    except Exception:
         return False
 
 
@@ -429,9 +486,7 @@ async def mission_resume(mission_id: int) -> dict:
 
 
 @app.get("/metrics")
-async def metrics():
-    from fastapi import Response
-
+async def metrics() -> Response:
     from purple import observability as obs
 
     payload, content_type = obs.metrics_text()

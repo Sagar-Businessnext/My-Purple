@@ -49,17 +49,7 @@ async def speak(text: str) -> bool:
 
 
 def _play(wav_bytes: bytes) -> None:
-    import io
-    import wave
-
-    import numpy as np
-    import sounddevice as sd
-
-    with wave.open(io.BytesIO(wav_bytes), "rb") as wf:
-        sr = wf.getframerate()
-        data = wf.readframes(wf.getnframes())
-    sd.play(np.frombuffer(data, dtype=np.int16), sr)
-    sd.wait()
+    audio.play_wav(wav_bytes)  # routes to the current default output device
 
 
 async def toast(title: str, message: str) -> None:

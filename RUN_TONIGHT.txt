@@ -84,10 +84,13 @@ Leave this window open — it's the running server.
   > purple
 
 (Equivalent: python -m purple.run)
-On startup you'll get a GREETING (a toast + a line in the activity feed, and
-spoken aloud if your speakers are on). On the very first run you'll ALSO get a
-one-time "catch-up" briefing, because no previous briefing is on record yet —
-that's expected; after that it only catches up a missed briefing on boot.
+On startup the built-in web UI opens automatically in your browser at
+http://127.0.0.1:8765/ui  (chat + activity feed + Observe toggle). If it doesn't
+open, just visit that URL. To stop it auto-opening: PURPLE_OPEN_UI_ON_START=false.
+You'll also get a GREETING (a toast + a line in the feed, spoken if your speakers
+are on). On the very first run you'll ALSO get a one-time "catch-up" briefing,
+because no previous briefing is on record yet - that's expected; after that it
+only catches up a missed briefing on boot.
 
 
 ------------------------------------------------------------------------------
@@ -171,21 +174,22 @@ NEEDS A LITTLE EXTRA (optional tonight)
 
 
 ------------------------------------------------------------------------------
- PART 7 — DESKTOP UI (optional; needs Node.js)  — gives you the Observe button,
-          tabs (Chat / Monitor / Automations / Memory / Missions / Settings)
+ PART 7 — THE UI  (one React app; setup.ps1 builds it with Vite)
 ------------------------------------------------------------------------------
-First time only — scaffold the Tauri shell and drop in Purple's UI source:
-  > cd D:\Purple\frontend
-  (Follow frontend/README.md: create the tauri-app, then copy the files from
-   frontend/ui-src/ into the app's src/.)
-
-Then, with the backend (PART 4) running, start the UI:
-  > cd D:\Purple\frontend\app
+Web UI (default): the full React app (Chat / Monitor / Automations / Memory /
+Missions / Settings, with the Observe toggle). setup.ps1 installs Node and builds
+it; Purple serves it and opens it on startup at:
+  http://127.0.0.1:8765/ui/
+If you skipped the build, do it manually:
+  > cd D:\My-Purple\frontend
   > npm install
-  > npm run tauri dev
+  > npm run build        (outputs to ..\src\purple\web -> served at /ui/)
+For live UI development with hot reload:  npm run dev   (http://localhost:5173)
 
-In the UI: the header has an "Observe off / Observing" toggle (click to start/stop
-screen observation); the greeting and any suggestions show in the Monitor feed.
+Native desktop app (optional, same app in its own window): needs Node + Rust.
+  > powershell -ExecutionPolicy Bypass -File scripts\build_tauri.ps1
+First run installs Rust, scaffolds the Tauri shell, and opens the window. The
+first build is slow (compiles Rust). For an installer: cd frontend; npm run tauri build
 
 
 ------------------------------------------------------------------------------

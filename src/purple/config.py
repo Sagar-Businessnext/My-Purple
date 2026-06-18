@@ -115,7 +115,8 @@ class Settings(BaseSettings):
     enable_tray: bool = False
     enable_push_to_talk: bool = False
     ptt_hotkey: str = "<ctrl>+<alt>+space"
-    ui_url: str = "http://127.0.0.1:8765"  # what the tray "Open Purple" opens
+    ui_url: str = "http://127.0.0.1:8765/ui/"  # the web UI (tray "Open Purple" + autostart)
+    open_ui_on_start: bool = True  # open the web UI in your browser when Purple starts
 
     # --- Browser control ---
     browser_headless: bool = False  # headed so you can watch / intervene

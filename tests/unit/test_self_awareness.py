@@ -17,6 +17,14 @@ def test_audible_truth_table():
     assert audio._audible(False, False, 1.0) is False  # no device
 
 
+def test_should_refresh_portaudio_on_device_change():
+    # Re-init PortAudio only when the default output endpoint actually changed.
+    assert audio._should_refresh("dev-A", "dev-A") is False  # same device
+    assert audio._should_refresh("dev-B", "dev-A") is True  # switched (BT -> headphones)
+    assert audio._should_refresh("dev-A", None) is True  # first play
+    assert audio._should_refresh(None, "dev-A") is False  # unknown -> don't churn
+
+
 def test_plan_channels_normal_speaks_and_toasts():
     speak, toast = plan_channels(
         breakthrough=False, quiet=False, yielding=False, audible=True, debounced=False

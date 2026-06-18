@@ -150,21 +150,9 @@ class VoiceLoop:
         return fh.name
 
     def _play(self, wav_bytes: bytes) -> None:
-        if not wav_bytes:
-            return
-        try:
-            import io
-            import wave
+        from purple import audio
 
-            import sounddevice as sd
-
-            with wave.open(io.BytesIO(wav_bytes), "rb") as wf:
-                sr = wf.getframerate()
-                data = wf.readframes(wf.getnframes())
-            sd.play(np.frombuffer(data, dtype=np.int16), sr)
-            sd.wait()
-        except Exception as exc:
-            log.warning("playback_failed", error=str(exc))
+        audio.play_wav(wav_bytes)  # routes to the current default output device, best-effort
 
     # --- mic capture (thread) ---
     def _record_command(self, stream: Any, start_timeout_frames: int | None = None) -> np.ndarray:
