@@ -21,7 +21,10 @@ MODELS_DIR = ROOT / "models"
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="PURPLE_",
-        env_file=".env",
+        # Absolute path so the .env we READ is the same one the /config Save WRITES
+        # (config_api._merge_env uses ROOT/.env), no matter which directory Purple is
+        # launched from.
+        env_file=str(ROOT / ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )

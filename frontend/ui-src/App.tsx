@@ -1061,9 +1061,19 @@ function SettingsPanel() {
       setMsg("No changes.");
       return;
     }
-    const r = await client.saveConfig(updates);
-    setMsg(`Saved: ${r.applied.join(", ")}.` + (r.restart_needed.length ? ` Restart needed for: ${r.restart_needed.join(", ")}.` : ""));
-    setCfg({ ...cfg, ...updates });
+    setMsg("Saving…");
+    try {
+      const r = await client.saveConfig(updates);
+      const applied = r.applied ?? [];
+      const restart = r.restart_needed ?? [];
+      setMsg(
+        `Saved: ${applied.join(", ") || "(none)"}.` +
+          (restart.length ? ` Restart needed for: ${restart.join(", ")}.` : "")
+      );
+      setCfg({ ...cfg, ...updates });
+    } catch (err) {
+      setMsg(`Save failed: ${String(err)} — check the server log.`);
+    }
   }
 
   return (
