@@ -389,3 +389,17 @@
 - RUN_TONIGHT.txt: new top section PART U "APPLY THE LATEST UPDATES (one go)": stop -> xcopy D:\Purple\src + frontend + setup.ps1 into D:\My-Purple (code only; .env/data/node_modules untouched) -> ollama rm q4 + pull q6_K (only that model; keep nomic-embed-text + qwen3-vl:8b) -> set .env (LLM q6_K, whisper cpu/int8, weather Ghaziabad, enable_wake, open_ui) -> cd frontend; npm install; npm run build -> start. Troubleshooting model refs -> q6_K, OOM step-down -> q5_K_M(~10.5GB)/7b.
 - Verified: setup.ps1 ASCII-clean; q6_K in config.py/.env/.env.example/setup.ps1; RUN_TONIGHT q4 only appears in the intended `ollama rm` line.
 - Files: src/purple/config.py, .env, .env.example, setup.ps1, RUN_TONIGHT.txt. Result: success.
+
+## 2026-06-18T11:00:00Z — Wake word diagnosed: right mic, threshold too high; make threshold live
+- Logs: voice_input_device name='Microphone (HyperX Cloud III)' (correct mic), wake_listening peaks rise with speech (0.05-0.215) vs ~0.003 silence, but NEVER reach threshold=0.5 -> "hey jarvis" not detected. So the loop + mic + model all work; 0.5 is just too strict for the user's voice/pronunciation (and/or they're saying "hey purple", which the default hey_jarvis model won't match).
+- Fix: voice/loop.py now reads `thr = settings.wake_threshold` LIVE each frame (was caching self.wake.threshold at WakeListener construction). wake_threshold is EDITABLE + NOT restart-required -> tuning from Settings now applies immediately. Verified settings import + edit.
+- Guidance: copy loop.py + restart once; say "HEY JARVIS" exactly (default model); Settings -> wake_threshold -> ~0.3 (down to 0.2 if needed, up if false triggers). "hey purple" needs a custom-trained model (docs/wake_word.md).
+- Files: src/purple/voice/loop.py. Result: success (wake mechanics confirmed working; it's a threshold/word-tuning matter).
+
+## 2026-06-18T11:30:00Z — Custom "hey purple" wake-word trainer (move off Jarvis)
+- User: Jarvis isn't the identity (Purple is); chose to TRAIN a custom Purple wake word. Also wants to not repeat the wake word every time.
+- NEW scripts/train_wake.py: orchestrates openWakeWord's OWN training (clone openWakeWord + piper-sample-generator, pip install openwakeword[training], fetch a Piper voice, write a YAML config for the target phrase, run generate_clips -> augment_clips -> train_model, copy <name>.onnx into models/). argparse (--word "hey purple" / --name / --samples / --workdir / --out). Verified: parses + --help runs; no heavy top-level imports. Honest fallback to the Colab notebook if openWakeWord's train API drifts.
+- docs/wake_word.md: local path rewritten to feature the one-command script; Colab kept as guaranteed fallback. Convention: PURPLE_WAKE_MODEL=models/hey_purple.onnx after training.
+- "Don't repeat every time" = conversation mode (already on): one wake -> stays listening for follow-ups until idle (conversation_idle_seconds). So after training, say "hey purple" once then talk freely.
+- Can't verify actual training (needs the user's GPU + multi-GB downloads + openWakeWord's pipeline). Script wraps their maintained train.py so logic isn't reinvented.
+- Files: scripts/train_wake.py (new), docs/wake_word.md. User copies both to D:\My-Purple; run `python scripts\train_wake.py --word "hey purple"`, set PURPLE_WAKE_MODEL, restart.

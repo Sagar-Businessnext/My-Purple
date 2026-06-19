@@ -212,11 +212,12 @@ class VoiceLoop:
                     score = self.wake.score(frame)
                     peak = max(peak, score)
                     frames += 1
+                    thr = settings.wake_threshold  # read live so Settings tuning applies at once
                     if frames >= 150:  # ~12s: prove the mic is heard + how close to waking
-                        log.info("wake_listening", peak=round(peak, 3), threshold=self.wake.threshold)
+                        log.info("wake_listening", peak=round(peak, 3), threshold=thr)
                         peak = 0.0
                         frames = 0
-                    if score >= self.wake.threshold:
+                    if score >= thr:
                         log.info("wake_detected", score=round(score, 3))
                         self._schedule(self._emit({"type": "voice", "state": "woke"}))
                         self._converse(stream)

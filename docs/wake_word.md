@@ -26,21 +26,31 @@ of synthetic "hey purple" clips with TTS, mixes in background noise, and trains.
    ```
 6. Run `python -m purple.voice` and say "hey purple".
 
-## Local path (if you'd rather train on your own RTX 5070 Ti)
+## Local path — one command (train on your own RTX 5070 Ti)
+
+A helper script automates the whole openWakeWord local flow (clone the tools, install
+training deps, generate synthetic "hey purple" clips, augment, train, and copy the model
+into `models/`):
 
 ```bash
-pip install openwakeword[training] piper-sample-generator
+python scripts/train_wake.py --word "hey purple"
 ```
 
-Then follow the same steps the notebook automates:
-1. Generate positive clips of "hey purple" with piper-sample-generator (a few thousand,
-   varied speakers/speeds).
-2. Download openWakeWord's prebuilt negative/background feature sets (linked in their
-   training docs).
-3. Run their training script to produce `hey_purple.onnx`.
+- Options: `--samples 2000` (more clips = sturdier, slower), `--name hey_purple`,
+  `--workdir .wake_training`, `--out models`.
+- First run downloads a few GB (a Piper TTS voice + background/augmentation data) and,
+  on a GPU, takes roughly 20-60 min. The result lands at `models/hey_purple.onnx`.
+- Then set in `.env`:
+  ```
+  PURPLE_ENABLE_WAKE=true
+  PURPLE_WAKE_MODEL=models/hey_purple.onnx
+  ```
+  Restart Purple and say "hey purple".
 
-Full, current instructions live in the openWakeWord training docs — they change
-occasionally, so follow theirs for the exact commands.
+The script wraps openWakeWord's **own** training code (it doesn't reinvent training). If
+openWakeWord changes their training API and a phase fails, fall back to the Colab notebook
+above — it produces the same `hey_purple.onnx`, which you just drop into `models/`. Either
+way the rest of Purple is unchanged.
 
 ## Tuning
 
